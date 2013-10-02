@@ -51,20 +51,11 @@ if (isset($options['help_note_menu_plugin']) ) {
     
 }
 
-		
-// Create the Help Top Level Menu Page
-add_action( 'admin_menu', 'register_my_custom_help_menu_page' );
-
-function register_my_custom_help_menu_page(){
-    // give the help notes menu the same required access capability ('read') as used by the 'profile' and 'dashboard' menu items
-    add_menu_page( 'Help menu title', 'Help Notes', 'read', 'helpmenu', '', plugins_url( 'role-based-help-notes/images/help.png' ), '5.9996' ); 
-}
-
 // Create a second level settings page
 add_action('admin_menu', 'register_my_custom_submenu_page');
 
 function register_my_custom_submenu_page() {
-    add_submenu_page( 'helpmenu', 'Notes', 'Settings', 'manage_options', 'notes-settings', 'notes_settings_page_callback' ); 
+    add_submenu_page( 'options-general.php', 'Notes', 'Help Notes', 'manage_options', 'notes-settings', 'notes_settings_page_callback' ); 
 }
 
 
@@ -258,6 +249,9 @@ function help_register_multiple_posttypes() {
 // Adds custom post type for help
 function help_register_posttype($role_key, $role_name) {
 
+	// limit to 20 characters length for the WP limitation of custom post type names
+	$post_type_name = 'h_' . substr($role_key , -18);
+	
     $role_name = (strcasecmp("note", $role_name) ?  $role_name . ' ' : '' );
 
 	$help_labels = array(
@@ -277,18 +271,12 @@ function help_register_posttype($role_key, $role_name) {
 
 	);
 	
-
-	if ($role_key != "general" ) {
-	
-		$help_capabilitytype = "help_{$role_key}_note";
-		
+	if ($role_key == "general" ) {
+		$help_capabilitytype    = 'post';	
 	} else {
-	
-		$help_capabilitytype = 'post';
-
-	
+		$help_capabilitytype    = sanitize_key($post_type_name);
 	};
-        
+    
 	$help_public = true;
 	        
 	$help_args = array(
@@ -299,7 +287,7 @@ function help_register_posttype($role_key, $role_name) {
 		'publicly_queryable'  => $help_public,
 		'exclude_from_search' => false,
 		'show_ui'             => true,
-		'show_in_menu'        => 'helpmenu', // toplevel_page_helpmenu',
+		'show_in_menu'        => true,
         'show_in_admin_bar'   => true,
 		'capability_type'     => $help_capabilitytype,
 		'map_meta_cap'        => true,
@@ -309,16 +297,14 @@ function help_register_posttype($role_key, $role_name) {
 		'rewrite'             => true,
 		'query_var'           => true,
 		'can_export'          => true,
-		'show_in_nav_menus'   => false
-	
+		'show_in_nav_menus'   => false,
+		'menu_icon'			  => plugins_url( 'role-based-help-notes/images/help.png' ),
 	);
-
-	// limit to 20 characters length for the WP limitation of custom post type names
-	$post_type_name = 'h_' . substr($role_key , -18);
 
 	register_post_type( $post_type_name, $help_args );
 
 }
+
 
 // Add New Capabilities ..
 function my_help_add_role_caps() {
@@ -330,8 +316,9 @@ function my_help_add_role_caps() {
 	if ( ! isset( $wp_roles ) )
 	$wp_roles = new WP_Roles();
 
-	$roles = $wp_roles->get_names();
-
+	$roles              = $wp_roles->get_names();
+    $administrator      = get_role('administrator');
+    
     // option collection  
 	$settings_options = get_option('help_note_option');  
     
@@ -339,16 +326,13 @@ function my_help_add_role_caps() {
 
 		foreach( $settings_options['help_note_post_types'] as $selected_key=>$role_selected)
         {
+			// limit to 20 characters length for the WP limitation of custom post type names
+			$post_type_name = 'h_' . substr($role_selected , -18);
 
     		// gets the author role
     		$role = get_role( $role_selected );
-    		$capability_type = "help_{$role_selected}_note";
-			
-			// don't allocate any of the three primitive capabilities to a users role
-        	//  $role->add_cap( "edit_{$capability_type}" );
-        	//	$role->add_cap( "read_{$capability_type}" );
-        	//	$role->add_cap( "delete_{$capability_type}" );
-    			
+    		$capability_type = sanitize_key($post_type_name);
+
 			
     		$role->add_cap( "edit_{$capability_type}s" );
     		$role->add_cap( "edit_others_{$capability_type}s" );
@@ -359,9 +343,29 @@ function my_help_add_role_caps() {
             $role->add_cap( "delete_published_{$capability_type}s" );
             $role->add_cap( "delete_others_{$capability_type}s" );
             $role->add_cap( "edit_private_{$capability_type}s" );
-            $role->add_cap( "edit_published_{$capability_type}s" );
-            //$role->add_cap( "create_{$capability_type}s" );
+            $role->add_cap( "edit_published_{$capability_type}s" );     
+            $role->add_cap( "create_{$capability_type}s" );  
+                    
+            // add admininstrator roles
+            // don't allocate any of the three primitive capabilities to a users role
+            $administrator->add_cap( "edit_{$capability_type}" );
+            $administrator->add_cap( "read_{$capability_type}" );
+            $administrator->add_cap( "delete_{$capability_type}" );
+            $administrator->add_cap( "create_{$capability_type}s" );
+			
+			// add admininstrator roles
+    		$administrator->add_cap( "edit_{$capability_type}s" );
+    		$administrator->add_cap( "edit_others_{$capability_type}s" );
+    		$administrator->add_cap( "publish_{$capability_type}s" );
+    		$administrator->add_cap( "read_private_{$capability_type}s" );
+            $administrator->add_cap( "delete_{$capability_type}s" );
+            $administrator->add_cap( "delete_private_{$capability_type}s" );
+            $administrator->add_cap( "delete_published_{$capability_type}s" );
+            $administrator->add_cap( "delete_others_{$capability_type}s" );
+            $administrator->add_cap( "edit_private_{$capability_type}s" );
+            $administrator->add_cap( "edit_published_{$capability_type}s" );
     	}
+  
 	}    
 }
 		
@@ -379,7 +383,7 @@ function help_do_on_activation() {
     update_option('help_note_option', $options); 
 
 
-    //Add the selected role capaabilities for use with the role help notes
+    //Add the selected role capabilities for use with the role help notes
 	my_help_add_role_caps();
     
 	// ATTENTION: This is *only* done during plugin activation hook in this example!
