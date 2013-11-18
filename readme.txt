@@ -3,7 +3,7 @@ Contributors: justinticktock
 Tags: multisite, roles, user, help, notes, cms, documents, groups, teams, collaboration
 Requires at least: 3.5
 Tested up to: 3.7.1
-Stable tag: 1.2.01
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,6 +21,8 @@ So if you want to quickly give a group a private area to share and post ideas/no
 3. Enable the Help Notes from the settings.
 
 A global 'General Help Notes' type is also available which is not tided to a specific role, this has the same access/capabilities as the standard wordpress 'post' type for read/write access.
+
+There is a widget available to list all users with access to the current Help Note type on display. The user display_name is shown and can be selected by each user within their own profile.
 
 Extensions:
 
@@ -49,9 +51,17 @@ You will need to use another plugin to manage roles and capabilities such as the
 
 1. The Settings Screen.
 2. The Help Notes for the enabled 'Proof Reader' role.
-
+3. The 'Appearance..Widgets' Admin screen using the 'Help Note Users' widget with the 'twenty thirteen' theme sidebar
+4. The 'twenty thirteen' theme showing the Contents page for a user with 'Proof Reader' role access.
 
 == Changelog ==
+
+
+= 1.2.1 =
+* 2013-11-18
+* Added Settings link to the admin acitve plugin listing 
+* Added Widget to allow sidebars to list all users with access to read/edit a Help Note type.
+* Code refactoring
 
 = 1.2.01 =
 * 2013-11-11
