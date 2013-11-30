@@ -7,13 +7,15 @@ Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Help Notes/Posts dedicated per role.
+Help Notes/Posts private to assigned users of a wordpress role.
 
 == Description ==
 
-This plugin allows you to quickly create a custom post type for user roles.  This allows users, with a specific role, the ability to create and edit their own 'help notes' providing a private set of notes for use.  It can be used for anything else that fits with that role (e.g. creating minutes-of-meetings notes etc...).
+Do you want to give users a private area to share information based on a role they have been assigned? 
 
-To add new roles to the basic wordpress roles (Administrator, Editor, Subscriber ..etc) you will need to use another plugin refer to [Roles_and_Capabilities](http://codex.wordpress.org/Roles_and_Capabilities) and Resources.. Plugins.  You can then use one of these plugins (e.g. [User Role Editor](http://wordpress.org/extend/plugins/user-role-editor/ "User Role Editor")) to allocate users to multiple roles.
+...this plugin allows you to quickly create a custom post type for user roles.  This allows users, with a specific role, the ability to create and edit their own 'help notes' providing a private set of notes for use.  It can be used for anything else that fits with that role (e.g. creating minutes-of-meetings notes etc...).
+
+To add new roles to the basic wordpress roles (Administrator, Editor, Subscriber ..etc) you will need to use another plugin refer to [Roles_and_Capabilities](http://codex.wordpress.org/Roles_and_Capabilities#Resources) and Resources.. Plugins.  You can then use one of these plugins (e.g. [User Role Editor](http://wordpress.org/extend/plugins/user-role-editor/ "User Role Editor")) to allocate users to multiple roles.
 
 So if you want to quickly give a group a private area to share and post ideas/notes ..
 1. Create a new role.
@@ -33,6 +35,7 @@ If you select the options for extending functionality through other plugins the 
 3. [Simple Page Ordering](http://wordpress.org/plugins/simple-page-ordering/) for easing re-ordering of Help Notes.
 
 
+[Plugin site](http://justinandco.com/plugins/role-based-help-notes/).  	
 [GitHub page](http://github.com/justinticktock/role-based-help-notes).
 
 == Installation ==
@@ -46,6 +49,10 @@ If you select the options for extending functionality through other plugins the 
 = I have a new role how can I add it? =
 
 You will need to use another plugin to manage roles and capabilities such as the [User Role Editor](http://wordpress.org/extend/plugins/user-role-editor/ "User Role Editor") plugin.
+
+= Is there a theme template I can modify in my child theme? =
+
+Yes ... [Answer](http://wordpress.org/support/topic/is-there-a-theme-template-i-can-modify-in-my-child-theme?replies=3#post-4929519)
 
 == Screenshots ==
 
