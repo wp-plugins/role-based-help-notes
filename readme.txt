@@ -2,7 +2,7 @@
 Contributors: justinticktock
 Tags: multisite, roles, user, help, notes, cms, documents, groups, teams, collaboration, BuddyPress
 Requires at least: 3.5
-Tested up to: 3.7.1
+Tested up to: 3.8
 Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -63,7 +63,10 @@ Yes ... [Answer](http://wordpress.org/support/topic/is-there-a-theme-template-i-
 
 == Changelog ==
 
-
+= 1.2.3 =
+* 2013-??-??
+* removed the 'tgmpa_register' hook after use in-case other plugins/themes have also used tgmpa_register.
+	
 = 1.2.2 =
 * 2013-11-22
 * New feature: Added `rbhn_author_url` filter.
