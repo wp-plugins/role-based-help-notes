@@ -30,27 +30,6 @@ function help_note_register_required_plugins() {
     
     // First, we read the option collection  
 	$options = get_option('help_note_option'); 
-        
-    if ( isset($options['help_note_menu_plugin']) && $options['help_note_menu_plugin'] ) {
-        $plugins[] = array(
-                        'name'          		=> 'Post type archive in menu',
-                        'slug'      			=> 'post-type-archive-in-menu',
-                        'required'              => false, // If false, the plugin is only 'recommended' instead of required
-            			'force_deactivation' 	=> false, // If true, plugin is deactivated upon theme switch, useful for theme-specific plugins
-                        'force_activation'      => true, // If true, plugin is activated upon theme activation and cannot be deactivated until theme switch
-                        );
-	}   
-	                             
-
-    if ( isset($options['help_note_simple_footnotes_plugin']) && $options['help_note_simple_footnotes_plugin'] ) {
-        $plugins[] = array(
-                        'name'              	=> 'Simple Footnotes',
-                        'slug'      			=> 'simple-footnotes',
-                        'required'              => false, // If false, the plugin is only 'recommended' instead of required
-            			'force_deactivation' 	=> false, // If true, plugin is deactivated upon theme switch, useful for theme-specific plugins
-                        'force_activation'      => true, // If true, plugin is activated upon theme activation and cannot be deactivated until theme switch
-                        );
-	}   
 	
     if ( isset($options['help_note_simple_page_ordering']) && $options['help_note_simple_page_ordering'] ) {
         $plugins[] = array(
@@ -61,7 +40,37 @@ function help_note_register_required_plugins() {
                         'force_activation'      => true, // If true, plugin is activated upon theme activation and cannot be deactivated until theme switch
                         );
 	}   
-	                     
+       
+    if ( isset($options['help_note_simple_footnotes_plugin']) && $options['help_note_simple_footnotes_plugin'] ) {
+        $plugins[] = array(
+                        'name'              	=> 'Simple Footnotes',
+                        'slug'      			=> 'simple-footnotes',
+                        'required'              => false, // If false, the plugin is only 'recommended' instead of required
+            			'force_deactivation' 	=> false, // If true, plugin is deactivated upon theme switch, useful for theme-specific plugins
+                        'force_activation'      => true, // If true, plugin is activated upon theme activation and cannot be deactivated until theme switch
+                        );
+	}   
+	
+    if ( isset($options['help_note_email_post_changes_plugin']) && $options['help_note_email_post_changes_plugin'] ) {
+        $plugins[] = array(
+                        'name'          		=> 'Email Post Changes',
+                        'slug'      			=> 'email-post-changes',
+                        'required'              => false, // If false, the plugin is only 'recommended' instead of required
+            			'force_deactivation' 	=> false, // If true, plugin is deactivated upon theme switch, useful for theme-specific plugins
+                        'force_activation'      => true, // If true, plugin is activated upon theme activation and cannot be deactivated until theme switch
+                        );
+	}                            
+             
+    if ( isset($options['help_note_menu_plugin']) && $options['help_note_menu_plugin'] ) {
+        $plugins[] = array(
+                        'name'          		=> 'Post type archive in menu',
+                        'slug'      			=> 'post-type-archive-in-menu',
+                        'required'              => false, // If false, the plugin is only 'recommended' instead of required
+            			'force_deactivation' 	=> false, // If true, plugin is deactivated upon theme switch, useful for theme-specific plugins
+                        'force_activation'      => true, // If true, plugin is activated upon theme activation and cannot be deactivated until theme switch
+                        );
+	}                            
+                    
     return $plugins;
 }
 
@@ -69,7 +78,7 @@ function help_note_register_required_plugins() {
 add_action( 'tgmpa_register', 'help_note_tgmpa_register' );
 
 function help_note_tgmpa_register() {
-echo "";
+
 	/**
 	 * Array of plugin arrays. Required keys are name and slug.
 	 * If the source is NOT from the .org repo, then source is also required.
@@ -117,7 +126,9 @@ echo "";
 			'nag_type'									=> 'updated' // Determines admin notice type - can only be 'updated' or 'error'
 		)
 	);
-
+	
 	tgmpa( $plugins, $config );
-
+	
+    // remove the action in-case other plugins/themes have also used tgmpa_register
+    remove_action( 'tgmpa_register', 'help_note_tgmpa_register' );
 }

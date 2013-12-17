@@ -1,9 +1,9 @@
 <?php
 /**
 Plugin Name: Role Based Help Notes
-Plugin URI: http://justinandco.com/justinsblog/role-based-help-notes/
+Plugin URI: http://justinandco.com/plugins/role-based-help-notes/
 Description: The addition of Custom Post Type to cover site help notes
-Version: 1.2.2
+Version: 1.2.3
 Author: Justin Fletcher
 Author URI: http://justinandco.com
 License: GPLv2 or later
@@ -44,7 +44,6 @@ require_once( HELP_MYPLUGINNAME_PATH . 'includes/widgets.php' );
 
 // Load code for better compatibility with other plugins.
 require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility.php' );
-
 
 /* Main Plugin Code */
 
@@ -163,6 +162,15 @@ function help_register_posttype($role_key, $role_name) {
 		$help_capabilitytype    = $post_type_name;
 	};
     
+
+    global $wp_version;
+    if (version_compare($wp_version, '3.8', '>=')) {  
+        //if version 3.8 or high we ahve dashicon support.
+		$help_menu_icon    = 'dashicons-format-aside' ;	
+	} else {
+		$help_menu_icon    = HELP_PLUGIN_URI . '/images/help.png' ;
+	};
+
 	$help_public = true;
 	        
 	$help_args = array(
@@ -184,12 +192,17 @@ function help_register_posttype($role_key, $role_name) {
 		'query_var'           => true,
 		'can_export'          => true,
 		'show_in_nav_menus'   => false,
-		'menu_icon'			  => HELP_PLUGIN_URI . '/images/help.png' ,
+    	'menu_icon'			  => $help_menu_icon,
+        
+        
 	);
 
 	register_post_type( $post_type_name, $help_args );
 
 }
+
+
+
 
 
 // Add Contents Details to the Contents page if delclared in settings ..
@@ -238,9 +251,9 @@ function rbhn_add_post_content($content) {
 	return $content;
 }
 
-function clean_post_type_name($post_type_name) {
+function clean_post_type_name($role_key) {
     // limit to 20 characters length for the WP limitation of custom post type names
-    $post_type_name = sanitize_key('h_' . substr($post_type_name , -18)); 
+    $post_type_name = sanitize_key('h_' . substr($role_key , -18)); 
     return $post_type_name;
 }
 

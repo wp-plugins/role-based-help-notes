@@ -34,17 +34,15 @@ function rbhn_capability_clean_up() {
             
     $roles = $wp_roles->get_names();
 
-    // loop through the roles to create the capabillity list that needs to be cleaned out
+    // loop through the roles to create the capability list that needs to be cleaned out
 	foreach($roles as $role_key=>$role_name)  
     {
         
         $role = get_role( $role_key );
         $caps = $role->capabilities;
         
-		// limit to 20 characters length for the WP limitation of custom post type names
-		$post_type_name = 'h_' . substr($role_key , -18);
-		$capability_type = sanitize_key($post_type_name);
-    
+        $capability_type = clean_post_type_name($role_key);
+		
         $delete_caps = array(
                 "edit_{$capability_type}",
                 "read_{$capability_type}",
@@ -63,9 +61,9 @@ function rbhn_capability_clean_up() {
                 );
 
 
-        // loop through the capablity list.
+        // loop through the capability list.
         foreach ($delete_caps as $cap) {
-            // loop through all roles and clean capabilties.
+            // loop through all roles and clean capabilities.
             foreach (array_keys($wp_roles->roles) as $role) {
                 $wp_roles->remove_cap($role, $cap);
             }
