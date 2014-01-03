@@ -33,7 +33,7 @@ If you select the options for extending functionality through other plugins the 
 * [Simple Page Ordering](http://wordpress.org/plugins/simple-page-ordering/) for easing re-ordering of Help Notes.
 * [Simple FootNotes](http://wordpress.org/plugins/simple-footnotes/) by [Andrew Nacin](http://profiles.wordpress.org/nacin/) to add a footnote shortcode [ref][/ref].
 * [Email Post Changes](http://wordpress.org/plugins/email-post-changes/) for emailing out changes to a Help Note as they occur.
-* [post_tpye_switcher](http://wordpress.org/plugins/post_tpye_switcher/) useful to change the role associated with a Help Note after it has been created.
+* [post_type_switcher](http://wordpress.org/plugins/post-type-switcher/) useful to change the role associated with a Help Note after it has been created.
 * [Post type archive in menu](http://wordpress.org/plugins/post-type-archive-in-menu/) plugin by [lpeharda](http://profiles.wordpress.org/lpeharda/) to add 'Help Notes' archives to your menus.
 
 
