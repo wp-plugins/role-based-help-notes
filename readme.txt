@@ -70,7 +70,7 @@ Yes ... [Answer](http://wordpress.org/support/topic/is-there-a-theme-template-i-
 = 1.2.4 =
 * 2014-01-02
 * Fixed widget and contents page for Roles with more than 18 characters.
-* New feature: Added the suggested plugin extension ["post_tpye_switcher"](http://wordpress.org/plugins/post_tpye_switcher/).
+* New feature: Added the suggested plugin extension ["post_type_switcher"](http://wordpress.org/plugins/post-type-switcher/)
 * New feature: Unused capabilities are now removed on deselecting a Help Notes Role rather than waiting until the plugin is uninstalled.
 * New feature: Made ready for translation.
 * New feature: Added `rbhn_dashicon` filter.
