@@ -11,19 +11,42 @@ if (is_multisite()) {
         foreach($blogs as $blog) {
             switch_to_blog($blog['blog_id']);
             rbhn_capabilities_clean_up();
-            delete_option('help_note_option');
-            delete_option('help_note_caps_created');
-            delete_option('rbhn_update_request');
+			rbhn_clean_database();
         }
         restore_current_blog();
     }
 } else {
 		rbhn_capabilities_clean_up();
-		delete_option('help_note_option');
-        delete_option('help_note_caps_created');
-		delete_option('rbhn_update_request');
+		rbhn_clean_database();
 }
-
+		
+// remove all database entries for currently active blog on uninstall.
+function rbhn_clean_database() {
+		
+		delete_option('rbhn_plugin_version');
+		delete_option('rbhn_caps_created');
+		delete_option('rbhn_general_enabled');
+		delete_option('rbhn_post_types');
+		delete_option('rbhn_contents_page');
+		delete_option('rbhn_user_widget_enabled');
+		
+		// plugin specific database entries
+		delete_option('rbhn_user_switching');
+		delete_option('rbhn_deactivate_user-switching');
+		delete_option('rbhn_simple_page_ordering');
+		delete_option('rbhn_deactivate_simple-page-ordering');
+		delete_option('rbhn_simple_footnotes_plugin');
+		delete_option('rbhn_deactivate_simple-footnotes');
+		delete_option('rbhn_disable_comments_plugin');
+		delete_option('rbhn_deactivate_disable-comments');
+		delete_option('rbhn_email_post_changes_plugin');
+		delete_option('rbhn_deactivate_email-post-changes');
+		delete_option('rbhn_post_type_switcher_plugin');
+		delete_option('rbhn_deactivate_post-type-switcher');
+		delete_option('rbhn_post_type_archive_in_menu_plugin');
+		delete_option('rbhn_deactivate_post-type-archive-in-menu');
+}
+		
 // remove capabilities on uninstall.
 function rbhn_capabilities_clean_up() {
 
@@ -44,10 +67,10 @@ function rbhn_capabilities_clean_up() {
 // remove capabilities on uninstall.
 function rbhn_role_caps_uninstall( $role_key ) {
 
-    // collect the Help Note Post Type name sorted within the option.
-    $settings_options = get_option('help_note_option');  
-    if (  ! empty($settings_options ) ) {
-	    foreach( $settings_options['help_note_post_types'] as $array) {
+	$post_types_array = get_option('rbhn_post_types');
+	
+    if (  ! empty($post_types_array ) ) {
+	    foreach( $post_types_array as $array) {
 			
 			foreach( $array as $active_role=>$active_posttype) {
 
@@ -105,4 +128,5 @@ function rbhn_role_caps_uninstall( $role_key ) {
 		$administrator->remove_cap($cap);		
 	}
 }
+	
 ?>
