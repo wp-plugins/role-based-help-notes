@@ -3,7 +3,7 @@ Contributors: justinticktock
 Tags: multisite, roles, user, help, notes, cms, documents, groups, teams, collaboration, BuddyPress
 Requires at least: 3.5
 Tested up to: 3.8.1
-Stable tag: 1.2.8.1
+Stable tag: 1.2.8.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,10 @@ Yes ... [Answer](http://wordpress.org/support/topic/is-there-a-theme-template-i-
 5. The 'twenty fourteen' theme showing the Contents page for a user with 'Proof Reader' role access.
 
 == Changelog ==
+
+= 1.2.8.2 =
+* 2014-03-07
+* Quick Fix - correction to user listing in widget.
 
 = 1.2.8.1 =
 * 2014-03-07
