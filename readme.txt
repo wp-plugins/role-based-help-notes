@@ -152,6 +152,9 @@ Yes ... [Answer](http://wordpress.org/support/topic/is-there-a-theme-template-i-
 
 == Upgrade Notice ==
 
+= 1.2.8 =
+You may see a Help Notes not appearing with a 404 error, just re-save your Help Notes settings to clear this issue.
+
 = 1.2.4 =
 You may see a few php warnings if you are in debug mode while the option structure is updated but nothing after that.
 
