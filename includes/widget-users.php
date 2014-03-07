@@ -56,7 +56,7 @@ class Users_Widget extends WP_Widget {
 		$post_type = get_post_type();
 		$post_types_array = get_option('rbhn_post_types');
 		$help_note_role =  '';
-		if (  ! empty($post_types_array ) ) {
+		if (  ! empty($post_types_array ) ) { 
 			foreach( $post_types_array as $key=>$post_array) {
                 foreach( $post_array as $active_role=>$active_posttype) {
     				if ($post_type == $active_posttype) {
