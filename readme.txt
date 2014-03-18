@@ -77,7 +77,7 @@ Yes ... [Answer](http://wordpress.org/support/topic/is-there-a-theme-template-i-
 * New feature:  simplification using method help_notes_role()
 * New feature:  added extendibility for Help Notes Extra
 * Fix: Corrected the linking to plugin install page if a theme is using the TGM_Plugin_Activation CLASS
-* Fix: TGM-Plugin-Activation more than once within a site. [#161] (https://github.com/thomasgriffin/TGM-Plugin-Activation/pull/168).
+* Fix: TGM-Plugin-Activation more than once within a site. [#161](https://github.com/thomasgriffin/TGM-Plugin-Activation/pull/168).
 * Fix: removed debug code.
 
 = 1.2.8.2 =
