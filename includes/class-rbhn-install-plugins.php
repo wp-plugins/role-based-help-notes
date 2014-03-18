@@ -18,13 +18,13 @@ class RBHN_install_plugins {
 		/**
 		 * Include the TGM_Plugin_Activation class.
 		 */
-
+		
 		require_once(dirname( __FILE__ ) . '/class-tgm-plugin-activation.php');
-	
+		
 		add_action( 'tgmpa_register', array( $this, 'rbhn_tgmpa_register' ) );
 	}
 
-	public function rbhn_tgmpa_register() {
+	public function rbhn_tgmpa_register( $class_exists ) {
 
 		$plugins = RBHN_Settings::install_plugins();
 		
@@ -63,8 +63,6 @@ class RBHN_install_plugins {
 		
 		tgmpa( $plugins, $config );
 		
-		// remove the action in-case other plugins/themes have also used tgmpa_register
-		remove_action( 'tgmpa_register', 'rbhn_tgmpa_register' );
 		}
 }
 

@@ -2,10 +2,30 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+Class RBHN_Extendible_Settings  {
+
+    private $handlers = array();
+	
+    public function registerHandler($handler) {
+        $this->handlers[] = $handler;
+    }
+
+    public function __call($method, $arguments) {
+        foreach ($this->handlers as $handler) {
+            if (method_exists($handler, $method)) {
+                return call_user_func_array(
+                    array($handler, $method),
+                    $arguments
+                );
+            }
+        }
+    }
+}
+
 /**
  * RBHN_Settings class.
  */
-class RBHN_Settings {
+class RBHN_Settings extends RBHN_Extendible_Settings {
 
 	private static $settings = '';
 	private $default_tab_key = 'rbhn_general';
@@ -78,7 +98,7 @@ class RBHN_Settings {
 				),
 				'rbhn_plugin_extension' => array(
 						'title' 		=> __( 'Plugin Extensions', 'role-based-help-notes-text-domain' ),
-						'description' 	=> __( 'These settings are optional.  Selection of any suggested plugin here will prompt you through the installation or you can go to the Menu ..[Plugins]..[Install Plugins].  The plugin will be forced active while this is selected; deselecting will not remove the plugin, you will need to manually uninstall.', 'role-based-help-notes-text-domain' ),					
+						'description' 	=> __( 'These settings are optional.  Selection of any suggested plugin here will prompt you through the installation.  The plugin will be forced active while this is selected; deselecting will not remove the plugin, you will need to manually uninstall.', 'role-based-help-notes-text-domain' ),					
 						'settings' 		=> array(
 												array(
 													'name' 		=> 'rbhn_user_switching',
@@ -247,7 +267,7 @@ class RBHN_Settings {
 	 * @access public
 	 * @return void
 	 */	
-	public function rbhn_hooks_section_callback($section_passed){
+	public function rbhn_hooks_section_callback( $section_passed ){
 		foreach ( self::$settings as $options_group => $section  ) {
 			if (( $section_passed['id'] == $options_group) && ( ! empty( $section['description'] ))) {
 				echo esc_html( self::$settings[$options_group]['description'] );	
@@ -317,8 +337,8 @@ class RBHN_Settings {
 		if ( ! isset( $wp_roles ) )
 		$wp_roles = new WP_Roles();
 
-		$roles = $wp_roles->get_names();
-
+		$roles = $wp_roles->get_names(); 
+		?><ul><?php 
 		asort($roles);
 		foreach($roles as $role_key=>$role_name)
 		{
@@ -329,19 +349,20 @@ class RBHN_Settings {
 
 			// Render the output  
 			?> 
-			<input 
+			<li><label><input 
 				type='checkbox'  
 				id="<?php echo esc_html( "help_notes_{$id}" ) ; ?>" 
 				name="<?php echo esc_html( $option['name'] ); ?>[][<?php echo esc_html( $role_key ) ; ?>]"
-				value="<?php echo esc_html( $post_type_name )	; ?>"<?php checked( $role_active ); ?>
+				value="<?php echo esc_attr( $post_type_name )	; ?>"<?php checked( $role_active ); ?>
 			</input>
-			<?php echo esc_html( $role_name ) . " <br/>";			
-		}								
-									
+			<?php echo esc_html( $role_name ) . " <br/>"; ?>	
+			</label></li>
+			<?php 
+		}?></ul><?php 
 		if ( ! empty( $option['desc'] ))
 			echo ' <p class="description">' . esc_html( $option['desc'] ) . '</p>';		
 	}
-	
+
 	/**
 	 * field_plugin_checkbox_option 
 	 *
@@ -357,7 +378,8 @@ class RBHN_Settings {
 
 		if ( ! file_exists( $plugin_main_file ) ) {
 			echo esc_html__( 'Enable to prompt installation and force active.', 'role-based-help-notes-text-domain' ) . ' ( ';
-			if ( $value ) echo '  <a href="plugins.php?page=install-required-plugins">' .  esc_html__( "Install", 'role-based-help-notes-text-domain' ) . " </a> | " ;										
+			if ( $value ) echo '  <a href="' . TGM_Plugin_Activation::$instance->parent_menu_slug . '?page=install-required-plugins">' .  esc_html__( "Install", 'role-based-help-notes-text-domain' ) . " </a> | " ;
+			
 		} elseif ( is_plugin_active( $option['slug'] . '/' . $option['slug'] . '.php' ) ) {
 			echo esc_html__(  'Force Active', 'role-based-help-notes-text-domain' ) . ' ( ';
 			if ( ! $value ) echo '<a href="plugins.php?s=' . esc_html( $option['label'] )	 . '">' .  esc_html__( "Deactivate", 'role-based-help-notes-text-domain' ) . "</a> | " ;	
@@ -483,8 +505,5 @@ class RBHN_Settings {
 		return $plugins; 
 	}
 }
-
-/** Create a new instance of the class */
-new RBHN_Settings();
 
 ?>

@@ -13,7 +13,7 @@ Help Notes/Posts private to assigned users of a WordPress role.
 
 Do you want to give users a private area to share information based on a role they have been assigned? 
 
-...this plugin allows you to quickly create a custom post type for user roles.  This allows users, with a specific role, the ability to create and edit their own 'help notes' providing a private set of notes for use.  It can be used for anything else that fits with that role (e.g. creating minutes-of-meetings notes etc...).
+...this plugin allows you to quickly create a custom post type for user roles.  This allows users, with a specific role, the ability to create and edit their own 'help notes' providing a private set of notes for use.  It can be used for anything else that fits with that role (e.g. creating and sharing ideas within teams, minutes-of-meetings, formal notes... etc.).
 
 To add new roles to the basic WordPress roles (Administrator, Editor, Subscriber ..etc) you will need to use another plugin refer to [Roles_and_Capabilities](http://codex.wordpress.org/Roles_and_Capabilities#Resources) and Resources.. Plugins.  You can then use one of these plugins (e.g. [User Role Editor](http://wordpress.org/extend/plugins/user-role-editor/ "User Role Editor")) to allocate users to multiple roles.
 
@@ -71,6 +71,14 @@ Yes ... [Answer](http://wordpress.org/support/topic/is-there-a-theme-template-i-
 5. The 'twenty fourteen' theme showing the Contents page for a user with 'Proof Reader' role access.
 
 == Changelog ==
+
+= 1.2.9 =
+* 2014-03-18
+* New feature:  simplification using method help_notes_role()
+* New feature:  added extendibility for Help Notes Extra
+* Fix: Corrected the linking to plugin install page if a theme is using the TGM_Plugin_Activation CLASS
+* Fix: TGM-Plugin-Activation more than once within a site. [#161] (https://github.com/thomasgriffin/TGM-Plugin-Activation/pull/168).
+* Fix: removed debug code.
 
 = 1.2.8.2 =
 * 2014-03-07
@@ -162,14 +170,5 @@ Yes ... [Answer](http://wordpress.org/support/topic/is-there-a-theme-template-i-
 
 == Upgrade Notice ==
 
-= 1.2.8 =
-You may see a Help Notes not appearing with a 404 error, just re-save your Help Notes settings to clear this issue.
-
-= 1.2.4 =
-You may see a few php warnings if you are in debug mode while the option structure is updated but nothing after that.
-
-= 1.2.0 =
-The 'General Help Notes' are now selectable and initially not-selected, if you wish to continue to use the 'General Help Notes' go to settings and make the selection.
-
-= 1.01 =
-* uninstall 1.0 completely to clean up capabilities before installing 1.01.
+= 1.2.9 =
+["Change Log.."](http://justinandco.com/plugins/role-based-help-notes-change-log/)
