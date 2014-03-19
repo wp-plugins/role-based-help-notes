@@ -174,5 +174,9 @@ Yes ... [Answer](http://wordpress.org/support/topic/is-there-a-theme-template-i-
 
 == Upgrade Notice ==
 
+= 1.2.9.1 =
+The User Widget has been changed to fix conflicts.  
+Due to this you will need to replace the widget in your sidebar!
+
 = 1.2.9 =
 ["Change Log.."](http://justinandco.com/plugins/role-based-help-notes-change-log/)
