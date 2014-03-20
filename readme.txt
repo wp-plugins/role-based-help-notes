@@ -22,7 +22,7 @@ So if you want to quickly give a group a private area to share and post ideas/no
 2. Add users to the role.
 3. Enable the Help Notes from the settings.
 
-A global 'General Help Notes' type is also available which is not tided to a specific role, this has the same access/capabilities as the standard WordPress 'post' type for write access, user must be logged in to read General Help Notes.
+A global 'General Help Notes' type is also available which is not tided to a specific role, this has the same access/capabilities as the standard WordPress 'post' type for write access.  Unlike the other Help Notes the General Type is public to read, you can see an example over at an [example content page](https://justinandco.com/plugins/help-notes/).
 
 There is a widget available to list all users with access to the current Help Note type on display. The user display_name is shown and can be selected by each user within their own profile.
 
