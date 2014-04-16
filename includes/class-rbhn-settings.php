@@ -80,7 +80,7 @@ class RBHN_Settings extends RBHN_Extendible_Settings {
 												'label' 	=> __( 'Contents Page', 'download_monitor' ),
 												'desc'		=> __( 'If you wish to create a contents page add a new page and select it here so that the Help Note Contents are displayed.', 'role-based-help-notes-text-domain' ),
 												'type'      => 'field_help_notes_contents_page_option',
-												),						
+												),
 										),
 				),
 				'rbhn_roles' => array(
@@ -196,7 +196,6 @@ class RBHN_Settings extends RBHN_Extendible_Settings {
 			)
 		);
 	}
-	
 
 	/**
 	 * Called during admin_menu, adds rendered using the plugin_options_page method.
@@ -208,6 +207,15 @@ class RBHN_Settings extends RBHN_Extendible_Settings {
 		add_options_page( __( 'Notes', 'role-based-help-notes-text-domain' ), __( 'Help Notes', 'role-based-help-notes-text-domain' ), 'manage_options', $this->plugin_options_key, array( &$this, 'plugin_options_page' ) );
 	}
 
+	/**
+	 * Menu page for Help Notes to become sub menus
+	 *
+	 * @access public
+	 * @return void
+	 */		 
+	public function menu_page() {
+	
+	}
 	
 	/**
 	 * register_settings function.
@@ -372,15 +380,20 @@ class RBHN_Settings extends RBHN_Extendible_Settings {
 	 */
 	public function field_plugin_checkbox_option( array $args  ) {
 		$option   = $args['option'];
-		$value = get_option( $option['name'] );
-		?><label><input id="setting-<?php echo esc_html( $option['name'] ); ?>" name="<?php echo esc_html( $option['name'] ); ?>" type="checkbox" value="1" <?php checked( '1', $value ); ?> /> <?php 
+		if ( is_plugin_active_for_network( $option['slug'] . '/' . $option['slug'] . '.php' )) {
+			?><label><input id="setting-<?php echo esc_html( $option['name'] ); ?>" name="<?php echo esc_html( $option['name'] ); ?>" type="checkbox" disabled="disabled" checked="checked"/> <?php
+		} else {
+			$value = get_option( $option['name'] );
+			?><label><input id="setting-<?php echo esc_html( $option['name'] ); ?>" name="<?php echo esc_html( $option['name'] ); ?>" type="checkbox" value="1" <?php checked( '1', $value ); ?> /> <?php 
+		}
+		
 		$plugin_main_file =  HELP_PLUGIN_DIR . $option['slug'] . '/' .  $option['slug'] . '.php' ;
 
 		if ( ! file_exists( $plugin_main_file ) ) {
 			echo esc_html__( 'Enable to prompt installation and force active.', 'role-based-help-notes-text-domain' ) . ' ( ';
-			if ( $value ) echo '  <a href="' . TGM_Plugin_Activation::$instance->parent_menu_slug . '?page=install-required-plugins">' .  esc_html__( "Install", 'role-based-help-notes-text-domain' ) . " </a> | " ;
+			if ( $value ) echo '  <a href="' . add_query_arg( 'page', TGM_Plugin_Activation::$instance->menu, admin_url( 'themes.php' ) ) . '">' .  esc_html__( "Install", 'role-based-help-notes-text-domain' ) . " </a> | " ;
 			
-		} elseif ( is_plugin_active( $option['slug'] . '/' . $option['slug'] . '.php' ) ) {
+		} elseif ( is_plugin_active( $option['slug'] . '/' . $option['slug'] . '.php' ) &&  ! is_plugin_active_for_network( $option['slug'] . '/' . $option['slug'] . '.php' )) {
 			echo esc_html__(  'Force Active', 'role-based-help-notes-text-domain' ) . ' ( ';
 			if ( ! $value ) echo '<a href="plugins.php?s=' . esc_html( $option['label'] )	 . '">' .  esc_html__( "Deactivate", 'role-based-help-notes-text-domain' ) . "</a> | " ;	
 		} else {
