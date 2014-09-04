@@ -3,7 +3,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
- * RBHN_Settings class.
+ * RBHN_Capabilities class.
  */
 class RBHN_Capabilities {
 
@@ -68,9 +68,9 @@ class RBHN_Capabilities {
 					$administrator->add_cap( "edit_{$capability_type}" );
 					$administrator->add_cap( "read_{$capability_type}" );
 					$administrator->add_cap( "delete_{$capability_type}" );
-					$administrator->add_cap( "create_{$capability_type}s" );
 					
 					// add administrator roles
+					$administrator->add_cap( "create_{$capability_type}s" );
 					$administrator->add_cap( "edit_{$capability_type}s" );
 					$administrator->add_cap( "edit_others_{$capability_type}s" );
 					$administrator->add_cap( "publish_{$capability_type}s" );
@@ -95,7 +95,7 @@ class RBHN_Capabilities {
 	 */
 	public static function rbhn_role_caps_cleanup( $role_key ) {
 	
-		global $role_based_help_notes;
+		$role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance();
 		
 		// Since the clean up is for roles not stored within the options array we need to regenerate the post-type/capability-type that would have existed
 		// if the help note for a role was enabled.  Once we know this we can then clean up the capabilities if they still exist.
@@ -156,7 +156,7 @@ class RBHN_Capabilities {
 		// collect an array of all inactive Help Note Post Types an remove capabilities
 		$post_types_array = get_option('rbhn_post_types');  
 		
-		global $role_based_help_notes;
+		$role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance();
 		$active_roles = $role_based_help_notes->help_notes_role();
 
 		// Find capabilities already built.
