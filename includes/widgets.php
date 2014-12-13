@@ -1,6 +1,9 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
 
 /**
  * Loads and enables the widgets for the plugin.
@@ -14,22 +17,27 @@ add_action( 'widgets_init', 'rbhn_register_widgets' );
 /**
  * Registers widgets for the plugin.
  *
- * @since 1.2.1
  */
-function rbhn_register_widgets() {
+function rbhn_register_widgets( ) {
 
     // option collection  
-	$option = get_option('rbhn_user_widget_enabled');  
+	$option = get_option( 'rbhn_widgets_enabled' );  
 
-    /* If the user widget is enabled. */    
+    /* If the user widget are enabled. */    
     if ( isset( $option ) && !empty( $option ) ) {
 
 		/* Load the user widget file. */
-		require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-users-widget.php' );
-
-		/* Register the user widget. */
+		require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-rbhn-users-widget.php' );
+		
+		/* Load the tag cloud widget file. */
+		require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-rbhn-tag-cloud-widget.php' );
+		
+		/* Register the widgets. */
 		register_widget( 'rbhn_users_widget' );
+		register_widget( 'rbhn_tag_cloud_widget' );
 	}
+	
+	
 }
 
 ?>

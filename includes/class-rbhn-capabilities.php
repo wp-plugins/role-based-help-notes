@@ -1,7 +1,9 @@
 <?php
 
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
 /**
  * RBHN_Capabilities class.
@@ -14,7 +16,7 @@ class RBHN_Capabilities {
 	 * @access public
 	 * @return void
 	 */
-	public function __construct() {
+	public function __construct( ) {
 	
 		// Add Meta Capability Handling 
 		add_filter( 'map_meta_cap', array( $this, 'rbhn_map_meta_cap' ), 10, 4);
@@ -26,27 +28,27 @@ class RBHN_Capabilities {
 	 * @access public
 	 * @return void
 	 */
-	public static function rbhn_add_role_caps() {
+	public static function rbhn_add_role_caps( ) {
 
-		$administrator      = get_role('administrator');
+		$administrator      = get_role( 'administrator' );
 		
 		// option collection  
-		$post_types_array = get_option('rbhn_post_types');		
-		$caps_options = get_option('rbhn_caps_created');  
+		$post_types_array 	= get_option( 'rbhn_post_types' );		
+		$caps_options 		= ( array ) get_option( 'rbhn_caps_created' );  
 
 		if ( ! empty( $post_types_array ) ) {
 
-			foreach( $post_types_array as $help_note_post_types_array) {
+			foreach( $post_types_array as $help_note_post_types_array ) {
 
-				foreach( $help_note_post_types_array as $active_role=>$active_posttype) {
+				foreach( $help_note_post_types_array as $active_role=>$active_posttype ) {
 
 
 					if ( in_array( $active_role, $caps_options ) )
 						break ; // if capabilities are already created drop out
-					
+
 					// add active role to option to stop re-creating its capabilities
 					$caps_options[] = $active_role;
-					update_option('rbhn_caps_created', $caps_options); 
+					update_option( 'rbhn_caps_created', $caps_options ); 
 
 					// gets the new Help Note active role
 					$role = get_role( $active_role );
@@ -61,27 +63,17 @@ class RBHN_Capabilities {
 					$role->add_cap( "delete_published_{$capability_type}s" );
 					$role->add_cap( "delete_others_{$capability_type}s" );
 					$role->add_cap( "edit_private_{$capability_type}s" );
-					$role->add_cap( "edit_published_{$capability_type}s" );     
-					$role->add_cap( "create_{$capability_type}s" );  
-							
-					// add administrator roles
-					// don't allocate any of the three primitive capabilities to a users role
-					$administrator->add_cap( "edit_{$capability_type}" );
-					$administrator->add_cap( "read_{$capability_type}" );
-					$administrator->add_cap( "delete_{$capability_type}" );
+					$role->add_cap( "edit_published_{$capability_type}s" );
+					$role->add_cap( "create_{$capability_type}s" );
+					$role->add_cap( "manage_categories_{$capability_type}" );
 					
-					// add administrator roles
-					$administrator->add_cap( "create_{$capability_type}s" );
-					$administrator->add_cap( "edit_{$capability_type}s" );
-					$administrator->add_cap( "edit_others_{$capability_type}s" );
-					$administrator->add_cap( "publish_{$capability_type}s" );
-					$administrator->add_cap( "read_private_{$capability_type}s" );
-					$administrator->add_cap( "delete_{$capability_type}s" );
-					$administrator->add_cap( "delete_private_{$capability_type}s" );
-					$administrator->add_cap( "delete_published_{$capability_type}s" );
-					$administrator->add_cap( "delete_others_{$capability_type}s" );
-					$administrator->add_cap( "edit_private_{$capability_type}s" );
-					$administrator->add_cap( "edit_published_{$capability_type}s" );
+					
+					// As of 12/11/2014 help notes are created all the time so Admins are no-longer given access by default 
+					// they must be in a role to get the Help Notes.  This is for the flush of permalinks to save correctly
+					// For Super-Admins on a multi-site Network installation all Help Notes will be available.
+					// For Administrators Help Notes will only be availble if the role is given.
+
+
 				}
 			}
 		}
@@ -95,55 +87,58 @@ class RBHN_Capabilities {
 	 * @return void
 	 */
 	public static function rbhn_role_caps_cleanup( $role_key ) {
-	
-		$role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance();
+
+		$role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
 		
 		// Since the clean up is for roles not stored within the options array we need to regenerate the post-type/capability-type that would have existed
 		// if the help note for a role was enabled.  Once we know this we can then clean up the capabilities if they still exist.
-		$capability_type = $role_based_help_notes->clean_post_type_name($role_key);
+		$capability_type = $role_based_help_notes->clean_post_type_name( $role_key );
 			
-		$delete_caps = array(
-				"edit_{$capability_type}",
-				"read_{$capability_type}",
-				"delete_{$capability_type}",
-				"edit_{$capability_type}s",
-				"edit_others_{$capability_type}s",
-				"publish_{$capability_type}s",
-				"read_private_{$capability_type}s",
-				"delete_{$capability_type}s",
-				"delete_private_{$capability_type}s",
-				"delete_published_{$capability_type}s",
-				"delete_others_{$capability_type}s",
-				"edit_private_{$capability_type}s",
-				"edit_published_{$capability_type}s",
-				"create_{$capability_type}s"
-				);
+		$delete_caps = 	array(
+								"edit_{$capability_type}",
+								"read_{$capability_type}",
+								"delete_{$capability_type}",
+								"edit_{$capability_type}s",
+								"edit_others_{$capability_type}s",
+								"publish_{$capability_type}s",
+								"read_private_{$capability_type}s",
+								"delete_{$capability_type}s",
+								"delete_private_{$capability_type}s",
+								"delete_published_{$capability_type}s",
+								"delete_others_{$capability_type}s",
+								"edit_private_{$capability_type}s",
+								"edit_published_{$capability_type}s",
+								"create_{$capability_type}s",
+								"manage_categories_{$capability_type}"
+							);
 
 
 		global $wp_roles;
 		
-		if ( ! isset( $wp_roles ) )
-			$wp_roles = new WP_Roles();
+		if ( ! isset( $wp_roles ) ) {
+			$wp_roles = new WP_Roles( );
+		}
 			
-		$users = get_users();
-		$administrator      = get_role('administrator');
+		$users 			= get_users( );
+		$administrator	= get_role( 'administrator' );
 		
-		foreach ($delete_caps as $cap) {
+		foreach ( $delete_caps as $cap ) {
 			
 			// Clean-up Capability from WordPress Roles
-			foreach (array_keys($wp_roles->roles) as $role) {
-				$wp_roles->remove_cap($role, $cap);
+			foreach ( array_keys( $wp_roles->roles ) as $role ) {
+				$wp_roles->remove_cap( $role, $cap );
 			}
 			
 			// Clean-up Capability from WordPress Users where explicitly allocated 
-			foreach ($users as $user) {
-				$user->remove_cap($cap);
+			foreach ( $users as $user ) {
+				$user->remove_cap( $cap );
 			}		
 
 			// Clean-up Capability from the Administrator Role
-			$administrator->remove_cap($cap);
+			$administrator->remove_cap( $cap );
 			
 		}
+		unset( $wp_roles );
 	}
 
 	/**
@@ -152,18 +147,18 @@ class RBHN_Capabilities {
 	 * @access public
 	 * @return void
 	 */
-	public static function rbhn_clean_inactive_capabilties() {
-	
+	public static function rbhn_clean_inactive_capabilties( ) {
+
 		// collect an array of all inactive Help Note Post Types an remove capabilities
-		$post_types_array = get_option('rbhn_post_types');  
+		$post_types_array = get_option( 'rbhn_post_types' );  
 		
-		$role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance();
-		$active_roles = $role_based_help_notes->help_notes_role();
+		$role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
+		$active_roles = $role_based_help_notes->help_notes_role( );
 
 		// Find capabilities already built.
-		$caps_options = get_option('rbhn_caps_created');
-		if ( ! empty( $caps_options )) {
-			foreach( $caps_options as $cap_built) {
+		$caps_options = get_option( 'rbhn_caps_created' );
+		if ( ! empty( $caps_options ) ) {
+			foreach( $caps_options as $cap_built ) {
 
 				// capabilities have been built so stop further re-builds.
 				if ( $cap_built && ! in_array( $cap_built, $active_roles ) ) {
@@ -189,24 +184,25 @@ class RBHN_Capabilities {
 	public function rbhn_map_meta_cap( $caps, $cap, $user_id, $args ) {
 		
 		// option collection to collect active Help Note roles.  
-		$post_types_array = get_option('rbhn_post_types');
+		$post_types_array = get_option( 'rbhn_post_types' );
 		
-		if (  ! empty( $post_types_array ) ) { 
+		if ( ! empty( $post_types_array ) ) { 
 			
 			$help_note_found = false;
 						
-			foreach( $post_types_array as $active_role=>$active_posttype) {
-
-				$capability_type = $active_posttype;
-
-				if ( 'edit_' . array_shift($capability_type) == $cap || 'delete_' . array_shift($capability_type) == $cap || 'read_' . array_shift($capability_type) == $cap  ) {
+			foreach( $post_types_array as $active_role=>$active_posttype ) {
+				
+				$active_posttype_values = array_values ( $active_posttype );
+				$capability_type = array_shift( $active_posttype_values );
+ 
+				if ( 'edit_' . $capability_type == $cap || 'delete_' . $capability_type == $cap || 'read_' . $capability_type == $cap  ) {
 
 
 					$post = get_post( $args[0] );
 					$post_type = get_post_type_object( $post->post_type );
 
 					/* Set an empty array for the caps. */
-					$caps = array();
+					$caps = array( );
 					
 					$help_note_found = true;
 					break;
@@ -216,7 +212,7 @@ class RBHN_Capabilities {
 
 			
 			/* If editing a help note, assign the required capability. */
-			if (  $help_note_found && ("edit_{$capability_type}" == $cap ) ) {
+			if ( $help_note_found && ( "edit_{$capability_type}" == $cap ) ) {
 
 				if( $user_id == $post->post_author )
 					$caps[] = $post_type->cap->edit_posts;
@@ -226,16 +222,16 @@ class RBHN_Capabilities {
 			}
 					
 			/* If deleting a help note, assign the required capability. */
-			elseif( $help_note_found && ("delete_{$capability_type}" == $cap ) ) {
+			elseif( $help_note_found && ( "delete_{$capability_type}" == $cap ) ) {
 				
-				if( isset($post->post_author ) && $user_id == $post->post_author  && isset($post_type->cap->delete_posts) )
+				if( isset( $post->post_author ) && $user_id == $post->post_author  && isset( $post_type->cap->delete_posts ) )
 					$caps[] = $post_type->cap->delete_posts;
-				elseif (isset($post_type->cap->delete_others_posts))
+				elseif ( isset( $post_type->cap->delete_others_posts ) )
 					$caps[] = $post_type->cap->delete_others_posts;		
 			}
 
 			/* If reading a private help note, assign the required capability. */
-			elseif( $help_note_found && ("read_{$capability_type}" == $cap ) ) {
+			elseif( $help_note_found && ( "read_{$capability_type}" == $cap ) ) {
 
 				if( 'private' != $post->post_status )
 					$caps[] = 'read';
@@ -251,6 +247,6 @@ class RBHN_Capabilities {
 	}
 }
 
-new RBHN_Capabilities();
+new RBHN_Capabilities( );
 
 ?>
