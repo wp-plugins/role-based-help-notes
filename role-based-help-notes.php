@@ -11,6 +11,7 @@ Domain Path: /languages/
 License: GPLv2 or later
 */
 
+                
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -50,33 +51,33 @@ class RBHN_Role_Based_Help_Notes {
 	 */
 	private function __construct( ) {
 
-		$this->plugin_full_path = plugin_dir_path(__FILE__) . 'role-based-help-notes.php' ;
-		
-		// Set the constants needed by the plugin.
-		add_action( 'plugins_loaded', array( $this, 'constants' ), 1 );
-		
-		/* Load the functions files. */
-		add_action( 'plugins_loaded', array( $this, 'includes' ), 2 );
-			
-		// Attached to set_current_user. Loads the plugin installer CLASS after themes are set-up to stop duplication of the CLASS.
-		add_action( 'set_current_user', array( $this, 'set_current_user' ) );
-		
-		// register admin side - Loads the textdomain, upgrade routine and menu item.
-		add_action( 'admin_init', array( $this, 'admin_init' ) );
-        add_action( 'admin_menu', array( $this, 'admin_menu' ), 9 );  // increase priority to stop cpt's overwriting the menu.
-		
-		// register the selected-active Help Note post types
-		add_action( 'init', array( $this, 'init' ) );
+            $this->plugin_full_path = plugin_dir_path(__FILE__) . 'role-based-help-notes.php' ;
 
-		// Load admin error messages	
-		add_action( 'admin_init', array( $this, 'deactivation_notice' ) );
-		add_action( 'admin_notices', array( $this, 'action_admin_notices' ) );
-	
-		// Add Contents Details to the Contents page if declared in settings ..
-		add_filter( 'the_content', array( $this, 'rbhn_add_post_content' ), 12 );
-		
-		// Add the Help Note Custom Post Types to the author post listing
-		add_filter( 'pre_get_posts', array( $this, 'rbhn_custom_post_author_archive' ) );
+            // Set the constants needed by the plugin.
+            add_action( 'plugins_loaded', array( $this, 'constants' ), 1 );
+
+            /* Load the functions files. */
+            add_action( 'plugins_loaded', array( $this, 'includes' ), 2 );
+
+            // Attached to set_current_user. Loads the plugin installer CLASS after themes are set-up to stop duplication of the CLASS.
+            add_action( 'set_current_user', array( $this, 'set_current_user' ) );
+
+            // register admin side - Loads the textdomain, upgrade routine and menu item.
+            add_action( 'admin_init', array( $this, 'admin_init' ) );
+            add_action( 'admin_menu', array( $this, 'admin_menu' ), 9 );  // increase priority to stop cpt's overwriting the menu.
+
+            // register the selected-active Help Note post types
+            add_action( 'init', array( $this, 'init' ) );
+
+            // Load admin error messages	
+            add_action( 'admin_init', array( $this, 'deactivation_notice' ) );
+            add_action( 'admin_notices', array( $this, 'action_admin_notices' ) );
+
+            // Add Contents Details to the Contents page if declared in settings ..
+            add_filter( 'the_content', array( $this, 'rbhn_add_post_content' ), 12 );
+
+            // Add the Help Note Custom Post Types to the author post listing
+            add_filter( 'pre_get_posts', array( $this, 'rbhn_custom_post_author_archive' ) );
 
 
 	}
@@ -88,13 +89,13 @@ class RBHN_Role_Based_Help_Notes {
 	 */
 	function constants( ) {
 
-		// Define constants
-		define( 'HELP_MYPLUGINNAME_PATH', plugin_dir_path(__FILE__) );
-		define( 'HELP_PLUGIN_DIR', trailingslashit( plugin_dir_path( HELP_MYPLUGINNAME_PATH ) ) );
-		
-		// admin prompt constants
-		define( 'PROMPT_DELAY_IN_DAYS', 30);
-		define( 'PROMPT_ARGUMENT', 'rbhn_hide_notice' );
+            // Define constants
+            define( 'HELP_MYPLUGINNAME_PATH', plugin_dir_path(__FILE__) );
+            define( 'HELP_PLUGIN_DIR', trailingslashit( plugin_dir_path( HELP_MYPLUGINNAME_PATH ) ) );
+
+            // admin prompt constants
+            define( 'PROMPT_DELAY_IN_DAYS', 30);
+            define( 'PROMPT_ARGUMENT', 'rbhn_hide_notice' );
 
 	}
 
@@ -104,21 +105,23 @@ class RBHN_Role_Based_Help_Notes {
 	 * @return void
 	 */
 	function includes( ) {
+            
+            // Load code for better compatibility with other plugins, register before the main settings
+            require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/plugin-compatibility.php' );
+            
+            // settings 
+            require_once( HELP_MYPLUGINNAME_PATH . 'includes/settings.php' );
 
-		// settings 
-		require_once( HELP_MYPLUGINNAME_PATH . 'includes/settings.php' );
+            require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-rbhn-taxonomy.php' ); 		
 
-		require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-rbhn-taxonomy.php' ); 		
+            // custom post type capabilities
+            require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-rbhn-capabilities.php' );  
 
-		// custom post type capabilities
-		require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-rbhn-capabilities.php' );  
+            // Load the widgets functions file.
+            require_once( HELP_MYPLUGINNAME_PATH . 'includes/widgets.php' );
 
-		// Load the widgets functions file.
-		require_once( HELP_MYPLUGINNAME_PATH . 'includes/widgets.php' );
 
-		// Load code for better compatibility with other plugins.
-		require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility.php' );
-		
+            
 	}
 
 
@@ -129,8 +132,8 @@ class RBHN_Role_Based_Help_Notes {
 	 */
 	public function set_current_user( ) {
 
-		// install the plugins and force activation if they are selected within the plugin settings
-		require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-install.php' );
+            // install the plugins and force activation if they are selected within the plugin settings
+            require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-install.php' );
 		
 	}
         
@@ -216,7 +219,19 @@ class RBHN_Role_Based_Help_Notes {
 		}
 			
 		load_plugin_textdomain( 'role-based-help-notes-text-domain', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-			
+                
+		// Add the HelpNotesExtra Email Methods to the Settings CLASS
+		if ( class_exists( 'RBHNE_Settings' ) ) {
+                    RBHN_Settings::get_instance( )->registerHandler( new RBHNE_Settings_Additional_Methods( ) );
+		}
+                
+                // Add the RBHN_Email_Users_Settings_Additional_Methods to the Settings CLASS
+                if ( class_exists( 'RBHN_Email_Users_Settings' ) ) {
+                    // Add the HelpNotes Email Group functionality
+                    RBHN_Settings::get_instance( )->registerHandler( new RBHN_Email_Users_Settings_Additional_Methods( ) );  
+
+                }                   
+   
 	}
 
 	/**
@@ -541,11 +556,9 @@ class RBHN_Role_Based_Help_Notes {
 		}
 		
 
-		// Add the HelpNotesExtra Email Methods to the Settings CLASS
-		if ( class_exists( 'RBHNE_Settings' ) ) {
-			RBHN_Settings::get_instance( )->registerHandler( new RBHNE_Settings_Additional_Methods( ) );
-		}
-		
+
+                
+
 	}
 
 	/**
@@ -965,5 +978,10 @@ function role_based_help_notes_flush_rewrites_deactivate( ) {
 	flush_rewrite_rules( );
 }
 register_deactivation_hook( __FILE__, 'role_based_help_notes_flush_rewrites_deactivate' );
+
+
+
+
+
 
 ?>
