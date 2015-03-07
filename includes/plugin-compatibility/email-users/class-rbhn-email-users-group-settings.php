@@ -231,76 +231,55 @@ class RBHN_EMAIL_GROUPS {
     }
 
     public function exclude_role_from_user( $editable_roles ) {
-           global $wp_roles;
-           
-           // drop out if not on the group emails page.
-            if	( ! is_admin() || ! ( isset( $_GET['page'] ) && ( $_GET['page'] == 'mailusers-send-to-group-page' ) ) )  {
-                return $editable_roles;
-            }	
-                        
-           if ( ! isset( $wp_roles ) ) {
-                   $wp_roles = new WP_Roles();
-           }
+        
+        /* Drop out if visible roles are being handled by the role-excluder plugin
+         */
+        if ( is_plugin_active( 'role-excluder/role-excluder.php' ) || is_plugin_active_for_network( 'role-excluder/role-excluder.php' ) ) {
+            return $editable_roles;
+        }             
 
-           $roles_all = array_keys( $wp_roles->get_names( ) );
+        global $wp_roles;
 
-           $current_user_assigned_roles = array( );
-           // loop through each role that is excluded
-           foreach ( $roles_all as $role ) {
+        // drop out if not on the group emails page.
+         if	( ! is_admin() || ! ( isset( $_GET['page'] ) && ( $_GET['page'] == 'mailusers-send-to-group-page' ) ) )  {
+             return $editable_roles;
+         }	
 
-                   if ( $this->rbhn_current_user_has_role( $role ) ) {
+        if ( ! isset( $wp_roles ) ) {
+                $wp_roles = new WP_Roles();
+        }
 
-                       //build up the allows roles array
-                       // use the $excluded_roles array as a mask on $current_user_assigned_roles for this foreach loop (settings-tab)
-                       $current_user_assigned_roles[] = $role;
+        $roles_all = array_keys( $wp_roles->get_names( ) );
 
-                   }
-           }
-           
-            $role_excluder_roles_allowed = array();
-            
-            // now we have gathered all roles that are still allowed so now we will find the 
-            // inverse to get an array of roles to be excluded
-            if ( $roles_all != $current_user_assigned_roles ) {
-                
-                $role_excluder_enabled_roles = array( );
-                if ( is_plugin_active( 'role-excluder/role-excluder.php' ) || is_plugin_active_for_network( 'role-excluder/role-excluder.php' ) ) {
-                    // if the role-excluder plugin is active then collect the roles that it is catering for.
-                    $role_excluder_enabled_roles = array_filter( ( array ) get_option( 'role_excluder_enable_roles' ) );
-                    
-                    // here add in the roles that role-exluder is not masking out if the role 
-                    // is being handled by the role-excluder settings and is allocated to the current user.
-                    // loop through each role that is excluded to remove excluded roles 
+        $current_user_assigned_roles = array( );
+        // loop through each role that is excluded
+        foreach ( $roles_all as $role ) {
 
-                    // find current users roles where role-excluder has been defined
-                    $applicable_excluder_enabled_roles = array_intersect( $current_user_assigned_roles, $role_excluder_enabled_roles);
-                    
-                    // remove the roles that the excluder plugin caters for from the users $current_user_assigned_roles
-                    $current_user_assigned_roles = array_diff( $current_user_assigned_roles, $applicable_excluder_enabled_roles);
-                            
-                    foreach ( $applicable_excluder_enabled_roles as $role_key ) {
-  
-                        // collect the roles to be excluded
-                        $role_excluder_masked_roles = (array) get_option( 'role_excluder_roles_' . $role_key );
-                        //build up the allows roles array
-                        // use the $excluded_roles array as a mask on $roles_allowed for this foreach loop (settings-tab)
-                        $role_excluder_roles_allowed = array_merge( $role_excluder_roles_allowed, array_diff( $roles_all, $role_excluder_masked_roles ) );                    
-                    }                    
+                if ( $this->rbhn_current_user_has_role( $role ) ) {
+
+                    //build up the allows roles array
+                    // use the $excluded_roles array as a mask on $current_user_assigned_roles for this foreach loop (settings-tab)
+                    $current_user_assigned_roles[] = $role;
+
                 }
+        }
 
- 
-                // if role(s) exclusion are handled by the role-excluder plugin already then allow the unmasked roles for the current user too
-                $allowed_roles = array_merge( $current_user_assigned_roles, $role_excluder_roles_allowed );
-                
-                // find roles not allowed for the current user
-                $excluded_roles = array_diff( $roles_all, $allowed_roles );
+         $role_excluder_roles_allowed = array();
 
-                // exclude roles from $editable_roles
-                foreach ( $excluded_roles as $role_key_exclude ) {
-                    unset ( $editable_roles[$role_key_exclude] );
-                }
-            }
-           return $editable_roles;
+         // now we have gathered all roles that are still allowed so now we will find the 
+         // inverse to get an array of roles to be excluded
+         if ( $roles_all != $current_user_assigned_roles ) {
+
+
+             // find roles not allowed for the current user
+             $excluded_roles = array_diff( $roles_all, $current_user_assigned_roles );
+
+             // exclude roles from $editable_roles
+             foreach ( $excluded_roles as $role_key_exclude ) {
+                 unset ( $editable_roles[$role_key_exclude] );
+             }
+         }
+        return $editable_roles;
     }
 
 
