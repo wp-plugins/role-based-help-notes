@@ -262,8 +262,7 @@ class RBHN_Settings {
 																			),					
 																		),
 										),
-									)
-								);
+									) );
 
 
         if ( null == self::$instance ) {

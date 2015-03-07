@@ -273,9 +273,13 @@ class RBHN_EMAIL_GROUPS {
                     // loop through each role that is excluded to remove excluded roles 
 
                     // find current users roles where role-excluder has been defined
-                    $addition_roles_allowed = array_intersect( $current_user_assigned_roles, $role_excluder_enabled_roles);
-                    foreach ( $addition_roles_allowed as $role_key ) {
-                        $role_excluder_enabled_roles = array_filter( ( array ) get_option( 'role_excluder_enable_roles' ) );
+                    $applicable_excluder_enabled_roles = array_intersect( $current_user_assigned_roles, $role_excluder_enabled_roles);
+                    
+                    // remove the roles that the excluder plugin caters for from the users $current_user_assigned_roles
+                    $current_user_assigned_roles = array_diff( $current_user_assigned_roles, $applicable_excluder_enabled_roles);
+                            
+                    foreach ( $applicable_excluder_enabled_roles as $role_key ) {
+  
                         // collect the roles to be excluded
                         $role_excluder_masked_roles = (array) get_option( 'role_excluder_roles_' . $role_key );
                         //build up the allows roles array

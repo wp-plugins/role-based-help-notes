@@ -9,7 +9,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-/* buddypress */
+/* Role Based Help Notes Extra email-diff and SSL Support 
+ *  
+ * Load the entension plugin settings
+ */
+if ( is_plugin_active( 'role-based-help-notes-extra/role-based-help-notes-extra.php' ) || is_plugin_active_for_network( 'role-based-help-notes-extra/role-based-help-notes-extra.php' ) ) {
+    require_once( RBHNE_PATH . 'includes/class-rbhne-settings.php' );
+}             
+
+/* buddypress 
+ * 
+ * If BuddyPress is installed and active then re-route the user page
+ * to the BuddyPress profile page instead of the user archive of posts
+ */
 if ( defined( 'BP_ENABLE_ROOT_PROFILES' ) ) {
     // Load class for compatibilty with email-users plugin
     require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/buddypress/buddypress.php' );
