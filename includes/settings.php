@@ -134,6 +134,20 @@ class RBHN_Settings {
 												'description' 	=> __( 'These settings are optional.  Selection of any suggested plugin here will prompt you through the installation.  The plugin will be forced active while this is selected; deselecting will not remove the plugin, you will need to manually uninstall.', 'role-based-help-notes-text-domain' ),					
 												'settings' 		=> array(
 																		array(
+																			'name' 		=> 'rbhn_email_users',
+																			'std' 		=> true,
+																			'label' 	=> 'Email Users',
+																			'cb_label'  => _x( 'Enable', 'enable the setting option.', 'role-based-help-notes-text-domain' ),
+																			'desc'		=> __( 'This plugin allows users within a role to email all users with the same role.  After activating this plugin go to the "Email Groups" settings tab to configure.', 'role-based-help-notes-text-domain' ),
+																			'type'      => 'field_plugin_checkbox_option',
+																			// the following are for tgmpa_register activation of the plugin
+																			'plugin_dir'			=> HELP_PLUGIN_DIR,
+																			'slug'      			=> 'email-users', 
+																			'required'              => false,
+																			'force_deactivation' 	=> false,
+																			'force_activation'      => true,												
+																			),  												
+																		array(
 																			'name' 		=> 'rbhn_user_role_editor',
 																			'std' 		=> true,
 																			'label' 	=> 'User Role Editor',
@@ -146,21 +160,7 @@ class RBHN_Settings {
 																			'required'              => false,
 																			'force_deactivation' 	=> false,
 																			'force_activation'      => true,												
-																			),
-																		array(
-																			'name' 		=> 'rbhn_email_users',
-																			'std' 		=> true,
-																			'label' 	=> 'Email Users',
-																			'cb_label'  => _x( 'Enable', 'enable the setting option.', 'role-based-help-notes-text-domain' ),
-																			'desc'		=> __( 'This plugin allows users within a role to email all users with the same role.  After activating this plugin go to the "Email Groups" settings tab to enable individual roles.', 'role-based-help-notes-text-domain' ),
-																			'type'      => 'field_plugin_checkbox_option',
-																			// the following are for tgmpa_register activation of the plugin
-																			'plugin_dir'			=> HELP_PLUGIN_DIR,
-																			'slug'      			=> 'email-users', 
-																			'required'              => false,
-																			'force_deactivation' 	=> false,
-																			'force_activation'      => true,												
-																			),                                                                                                    
+																			),                                                                                                  
 																		array(
 																			'name' 		=> 'rbhn_menu_items_visibility_control',
 																			'filename'  => 'init',
