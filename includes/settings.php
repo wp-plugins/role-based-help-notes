@@ -433,7 +433,7 @@ require_once( dirname( __FILE__ ) . '/class-tabbed-settings.php' );
 
 
 
-// add action after the settings save hook.
+// hook the additional settings through $wp->init() for compatabiltiy with bbPress
 add_action( 'init', 'rbhn_init' );
 
 function rbhn_init( ) {
