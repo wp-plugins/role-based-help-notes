@@ -55,10 +55,10 @@ class RBHN_Role_Based_Help_Notes {
 
             /* Set the constants needed by the plugin. */
             add_action( 'plugins_loaded', array( $this, 'constants' ), 1 );
-
+     
             /* Load the functions files. */
             add_action( 'plugins_loaded', array( $this, 'includes' ), 2 );
-
+return; 
             /* Load the Help Notes during the permalinks re-creation */
             add_action( 'generate_rewrite_rules',  array( $this, 'generate_rewrite_rules' ));
             
@@ -108,13 +108,13 @@ class RBHN_Role_Based_Help_Notes {
 	 * @return void
 	 */
 	function includes( ) {
-            
+        
             // Load code for better compatibility with other plugins, register before the main settings
             require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/plugin-compatibility.php' );
-            
+     
             // settings 
             require_once( HELP_MYPLUGINNAME_PATH . 'includes/settings.php' );
-
+return;  
             require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-rbhn-taxonomy.php' ); 		
 
             // custom post type capabilities
@@ -123,7 +123,7 @@ class RBHN_Role_Based_Help_Notes {
             // Load the widgets functions file.
             require_once( HELP_MYPLUGINNAME_PATH . 'includes/widgets.php' );
 
-
+  
             
 	}
 
@@ -198,7 +198,7 @@ class RBHN_Role_Based_Help_Notes {
 	 * @return void
 	 */
 	public function admin_init( ) {
-	
+
 		$this->action_init_store_user_meta( );
 	
 		$plugin_current_version = get_option( 'rbhn_plugin_version' );
@@ -632,17 +632,28 @@ class RBHN_Role_Based_Help_Notes {
 
 	/**
 	 * Returns the post content with the Help Notes index appended.
+         * Support has been added for the "Tabby Responsive Tabs" plugin
 	 *
 	 * @access public
 	 * @param text $content post content	 
 	 * @return $content
 	 */	
 	public function rbhn_add_post_content( $content ) {
-
+            
+                $tabby_responsive_tabs_plugin_active = false;
+                if ( ( is_plugin_active( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) || 
+                      is_plugin_active_for_network( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) ) 
+                      && get_option( 'rbhn_tabbed_contents_page' )
+                    ) {
+                    $tabby_responsive_tabs_plugin_active = True;
+                } 
+                
 		if ( ( get_option( 'rbhn_contents_page' ) != "0" ) && is_page( get_option( 'rbhn_contents_page' ) ) && is_main_query( ) ) {
 
 			$active_role_notes = $this->active_help_notes( );
 			
+                        $rbhn_content = "";
+                        
 			foreach( $active_role_notes as $posttype_selected ) {
 
 				$posttype = get_post_type_object( $posttype_selected );			
@@ -667,14 +678,40 @@ class RBHN_Role_Based_Help_Notes {
 						);
 					
 					
-				$content =  $content .	'<h2>' . $posttype_Name . '</h2>';	
+					
 				$help_notes_listing = wp_list_pages( $args );
+                                
+
+                                
+                                
 				if ( $help_notes_listing != "" ) {
-					$content =  $content . '<p>' . $help_notes_listing . '</p>';
+                                        
+					$rbhn_section_content =   '<p>' . $help_notes_listing . '</p>';
 				} else {
-					$content =  $content . '<p><li>' . _x( 'None yet', 'No help notes are currently available for this role.', 'role-based-help-notes-text-domain' )   . '</li></p></br>';
+					$rbhn_section_content =   '<p><li>' . _x( 'None yet', 'No help notes are currently available for this role.', 'role-based-help-notes-text-domain' )   . '</li></p></br>';
 				}
+                               
+
+                                if ( $tabby_responsive_tabs_plugin_active ) {
+                                    $rbhn_content =  $rbhn_content .  '[tabby title="' . $posttype_Name . '"]' . $rbhn_section_content   ;
+                                } else {
+                                    $rbhn_content =  $rbhn_content . '<h2>' . $posttype_Name . '</h2>';
+                                    $rbhn_content =  $rbhn_content . $rbhn_section_content;
+                                } 
+                                           
+                                
 			}
+                        
+                        
+                        if ( $tabby_responsive_tabs_plugin_active ) {
+                            $content =  $content . do_shortcode( $rbhn_content . '[tabbyending]'  ) ;
+                        } else {
+                            $content =  $content . $rbhn_content ;
+                        }         
+                                        
+                        
+                        
+                        
 			
 		}
 

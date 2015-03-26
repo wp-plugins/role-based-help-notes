@@ -99,6 +99,13 @@ class RBHN_Settings {
 																		'type'      => 'field_page_select_list_option',
 																		),
 																	array(
+																		'name' 		=> 'rbhn_tabbed_contents_page',
+																		'std' 		=> '0',
+																		'label' 	=> __( 'Tabbed Contents Page', 'role-based-help-notes-text-domain' ),
+																		'desc'		=> __( 'Enable to allow the Tabby Response Tabs to work on the contents page.', 'role-based-help-notes-text-domain' ),
+																		'type'      => 'field_checkbox_option',
+																		),
+																	array(
 																		'name' 		=> 'rbhn_welcome_page',
 																		'std' 		=> '0',
 																		'label' 	=> __( 'Welcome Page', 'role-based-help-notes-text-domain' ),
@@ -161,6 +168,20 @@ class RBHN_Settings {
 																			'force_deactivation' 	=> false,
 																			'force_activation'      => true,												
 																			),                                                                                                  
+																		array(
+																			'name' 		=> 'rbhn_tabby_responsive_tabs',
+																			'std' 		=> false,
+																			'label' 	=> 'Tabby Response Tabs',
+																			'cb_label'  => _x( 'Enable', 'enable the setting option.', 'role-based-help-notes-text-domain' ),
+																			'desc'		=> __( 'Once enabled a new settings will be provided on the GENERAL settings tab to allow the contents page to change to tabs.', 'role-based-help-notes-text-domain' ),
+																			'type'      => 'field_plugin_checkbox_option',
+																			// the following are for tgmpa_register activation of the plugin
+																			'plugin_dir'			=> HELP_PLUGIN_DIR,
+																			'slug'      			=> 'tabby-responsive-tabs', 
+																			'required'              => false,
+																			'force_deactivation' 	=> false,
+																			'force_activation'      => true,												
+																			),	                                                                                                
 																		array(
 																			'name' 		=> 'rbhn_menu_items_visibility_control',
 																			'filename'  => 'init',
@@ -288,7 +309,7 @@ class RBHN_Settings_Additional_Methods {
 	 * @return void
 	 */
 	public function field_help_notes_post_types_option( array $args  ) {
-	
+
 		$option   = $args['option'];
 		
 		//  loop through the site roles and create a custom post for each
@@ -344,6 +365,7 @@ class RBHN_Settings_Additional_Methods {
 	 * @return void
 	 */
 	public function field_help_notes_taxonomy_options( array $args  ) {
+            
 		$option   = $args['option'];
 		
 		//  loop through the site roles and create a custom post for each
@@ -406,10 +428,20 @@ class RBHN_Settings_Additional_Methods {
 // Include the Tabbed_Settings class.
 require_once( dirname( __FILE__ ) . '/class-tabbed-settings.php' );
 
-// Create new tabbed settings object for this plugin..
-// and Include additional functions that are required.
-RBHN_Settings::get_instance( )->registerHandler( new RBHN_Settings_Additional_Methods( ) );
 
+
+
+
+
+// add action after the settings save hook.
+add_action( 'init', 'rbhn_init' );
+
+function rbhn_init( ) {
+
+    // Create new tabbed settings object for this plugin..
+    // and Include additional functions that are required.
+    RBHN_Settings::get_instance( )->registerHandler( new RBHN_Settings_Additional_Methods( ) );
 
 	
+}	
 ?>

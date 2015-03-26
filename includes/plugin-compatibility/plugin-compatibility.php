@@ -13,9 +13,41 @@ if ( ! defined( 'ABSPATH' ) ) {
  *  
  * Load the entension plugin settings
  */
-if ( is_plugin_active( 'role-based-help-notes-extra/role-based-help-notes-extra.php' ) || is_plugin_active_for_network( 'role-based-help-notes-extra/role-based-help-notes-extra.php' ) ) {
-    require_once( RBHNE_PATH . 'includes/class-rbhne-settings.php' );
-}             
+
+if ( is_admin() ) {
+    include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+    if ( is_plugin_active( 'role-based-help-notes-extra/role-based-help-notes-extra.php' ) || is_plugin_active_for_network( 'role-based-help-notes-extra/role-based-help-notes-extra.php' ) ) {
+        require_once( RBHNE_PATH . 'includes/class-rbhne-settings.php' );
+    }
+}
+
+/* tabby-responsive-tabs 
+ * 
+ * If tabby-responsive-tabs is installed and active and tabbed helpnotes are 
+ * selected in the settings then the main rbhn class will provide a tabbed 
+ * contents page.
+ */
+
+/* If the plugin is not active remove the settings */
+if ( ! is_plugin_active( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) && ! is_plugin_active_for_network( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) ) {
+    add_filter( 'rbhn_settings', 'tabby_responsive_tabs_settings', 10, 1 );
+}     
+
+function tabby_responsive_tabs_settings( $settings ) {
+    
+    foreach ( $settings['rbhn_general']['settings'] as $setting=>$options ) {
+        //var_dump( $options );
+
+        if ( isset( $options['name'] ) && ( $options['name'] == 'rbhn_tabbed_contents_page' ) ) {
+            unset($settings['rbhn_general']['settings'][$setting]);
+            break 1;
+        }
+
+    }
+    return $settings;
+}
+
+
 
 /* buddypress 
  * 
@@ -26,7 +58,6 @@ if ( defined( 'BP_ENABLE_ROOT_PROFILES' ) ) {
     // Load class for compatibilty with email-users plugin
     require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/buddypress/buddypress.php' );
 }        
-
 
 /* user-emails 
  * 
