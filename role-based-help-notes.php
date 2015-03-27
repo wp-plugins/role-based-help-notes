@@ -54,16 +54,17 @@ class RBHN_Role_Based_Help_Notes {
             $this->plugin_full_path = plugin_dir_path(__FILE__) . 'role-based-help-notes.php' ;
 
             /* Set the constants needed by the plugin. */
-            add_action( 'plugins_loaded', array( $this, 'constants' ), 1 );
+            add_action( 'after_setup_theme', array( $this, 'constants' ) );
      
-            /* Load the functions files. */
-            add_action( 'plugins_loaded', array( $this, 'includes' ), 2 );
-return; 
+            /* Load the resources */
+             add_action( 'after_setup_theme', array( $this, 'includes' ) );
+
             /* Load the Help Notes during the permalinks re-creation */
             add_action( 'generate_rewrite_rules',  array( $this, 'generate_rewrite_rules' ));
             
             /* Attached to set_current_user. Loads the plugin installer CLASS after themes are set-up to stop duplication of the CLASS. */
-            add_action( 'set_current_user', array( $this, 'set_current_user' ) );
+            //add_action( 'set_current_user', array( $this, 'set_current_user' ) );
+            add_action( 'init', array( $this, 'set_current_user' ) );
 
             /* register admin side - Loads the textdomain, upgrade routine and menu item. */
             add_action( 'admin_init', array( $this, 'admin_init' ) );
@@ -108,20 +109,28 @@ return;
 	 * @return void
 	 */
 	function includes( ) {
+            require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-rbhn-taxonomy.php' ); 
         
             // Load code for better compatibility with other plugins, register before the main settings
             require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/plugin-compatibility.php' );
-     
+
             // settings 
             require_once( HELP_MYPLUGINNAME_PATH . 'includes/settings.php' );
-return;  
-            require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-rbhn-taxonomy.php' ); 		
-
+		
             // custom post type capabilities
             require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-rbhn-capabilities.php' );  
 
             // Load the widgets functions file.
             require_once( HELP_MYPLUGINNAME_PATH . 'includes/widgets.php' );
+            
+	}
+
+	/**
+	 * Loads the initial files needed by the plugin.
+	 *
+	 * @return void
+	 */
+	function init_2( ) {
 
   
             
@@ -140,13 +149,13 @@ return;
 		
 	}
         
-    /**
+        /**
 	 * Initialise the plugin menu. 
 	 *
 	 * @return void
 	 */
 	public function admin_menu( ) {
-		
+
 		if ( ! help_notes_available( ) )
 			return; 
 		
@@ -641,6 +650,12 @@ return;
 	public function rbhn_add_post_content( $content ) {
             
                 $tabby_responsive_tabs_plugin_active = false;
+                
+                /* load the is_plugin_active() method for use on the front of site as its only
+                 * available on the admin side by default
+                 */
+                include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+                
                 if ( ( is_plugin_active( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) || 
                       is_plugin_active_for_network( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) ) 
                       && get_option( 'rbhn_tabbed_contents_page' )

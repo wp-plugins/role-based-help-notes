@@ -428,20 +428,8 @@ class RBHN_Settings_Additional_Methods {
 // Include the Tabbed_Settings class.
 require_once( dirname( __FILE__ ) . '/class-tabbed-settings.php' );
 
+// Create new tabbed settings object for this plugin..
+// and Include additional functions that are required.
+RBHN_Settings::get_instance( )->registerHandler( new RBHN_Settings_Additional_Methods( ) );
 
-
-
-
-
-// hook the additional settings through $wp->init() for compatabiltiy with bbPress
-add_action( 'init', 'rbhn_init' );
-
-function rbhn_init( ) {
-
-    // Create new tabbed settings object for this plugin..
-    // and Include additional functions that are required.
-    RBHN_Settings::get_instance( )->registerHandler( new RBHN_Settings_Additional_Methods( ) );
-
-	
-}	
 ?>

@@ -28,6 +28,13 @@ if ( is_admin() ) {
  * contents page.
  */
 
+
+
+/* load the is_plugin_active() method for use on the front of site as its only
+ * available on the admin side by default
+ */
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
 /* If the plugin is not active remove the settings */
 if ( ! is_plugin_active( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) && ! is_plugin_active_for_network( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) ) {
     add_filter( 'rbhn_settings', 'tabby_responsive_tabs_settings', 10, 1 );
