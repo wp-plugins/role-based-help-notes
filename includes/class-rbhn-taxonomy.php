@@ -107,89 +107,79 @@ class RBHN_TAX {
 //Add the new Taxonomies for the Help Notes.
 
 
-/* 
- *  register includes with the $wp->init() hook so that debugging is easier within bbPress
- */
-//add_filter( 'init', 'rbhn_init_tax' );
+// Configure the Taxonomy
+$args = array(
+                        'post_type' => 'h_administrator', 
+                        'taxonomy' => 'h_tax_topics', 
+                        'page_title' => 'New Topics', 
+                        'menu_title' => 'Topics',
+                        'labels' => array( 
+                                                                'name' => _x( 'Topics', 'taxonomy plural name', 'role-based-help-notes-text-domain' ),
+                                                                'singular_name' => _x( 'Topic', 'taxonomy singular name', 'role-based-help-notes-text-domain' ),
+                                                                'search_items' =>  __( 'Search Topics', 'role-based-help-notes-text-domain' ),
+                                                                'all_items' => __( 'All Topics', 'role-based-help-notes-text-domain' ),
+                                                                'parent_item' => __( 'Parent Topic', 'role-based-help-notes-text-domain' ),
+                                                                'parent_item_colon' => __( 'Parent Topic:', 'role-based-help-notes-text-domain' ),
+                                                                'edit_item' => __( 'Edit Topic', 'role-based-help-notes-text-domain' ),
+                                                                'update_item' => __( 'Update Topic', 'role-based-help-notes-text-domain' ),
+                                                                'add_new_item' => __( 'Add New Topic', 'role-based-help-notes-text-domain' ),
+                                                                'new_item_name' => __( 'New Topic Name', 'role-based-help-notes-text-domain' ),
+                                                                'menu_name' => _x( 'Topics', 'taxonomy menu name', 'role-based-help-notes-text-domain' ),
+                                                        ) 
+                        );
 
-//function rbhn_init_tax( ) {
+$post_types_array       = array_filter( ( array ) get_option( 'rbhn_post_types' ) );
+$role_based_help_notes  = RBHN_Role_Based_Help_Notes::get_instance( );
 
+//  loop through the site roles and create a topics taxonomy for each
+global $wp_roles;
 
-    // Configure the Taxonomy
-    $args = array(
-                            'post_type' => 'h_administrator', 
-                            'taxonomy' => 'h_tax_topics', 
-                            'page_title' => 'New Topics', 
-                            'menu_title' => 'Topics',
-                            'labels' => array( 
-                                                                    'name' => _x( 'Topics', 'taxonomy plural name', 'role-based-help-notes-text-domain' ),
-                                                                    'singular_name' => _x( 'Topic', 'taxonomy singular name', 'role-based-help-notes-text-domain' ),
-                                                                    'search_items' =>  __( 'Search Topics', 'role-based-help-notes-text-domain' ),
-                                                                    'all_items' => __( 'All Topics', 'role-based-help-notes-text-domain' ),
-                                                                    'parent_item' => __( 'Parent Topic', 'role-based-help-notes-text-domain' ),
-                                                                    'parent_item_colon' => __( 'Parent Topic:', 'role-based-help-notes-text-domain' ),
-                                                                    'edit_item' => __( 'Edit Topic', 'role-based-help-notes-text-domain' ),
-                                                                    'update_item' => __( 'Update Topic', 'role-based-help-notes-text-domain' ),
-                                                                    'add_new_item' => __( 'Add New Topic', 'role-based-help-notes-text-domain' ),
-                                                                    'new_item_name' => __( 'New Topic Name', 'role-based-help-notes-text-domain' ),
-                                                                    'menu_name' => _x( 'Topics', 'taxonomy menu name', 'role-based-help-notes-text-domain' ),
-                                                            ) 
-                            );
+// Load roles if not set
+if ( ! isset( $wp_roles ) ) {
+        $wp_roles = new WP_Roles( );
+}
 
-    $post_types_array       = array_filter( ( array ) get_option( 'rbhn_post_types' ) );
-    $role_based_help_notes  = RBHN_Role_Based_Help_Notes::get_instance( );
-    
-    //  loop through the site roles and create a topics taxonomy for each
-    global $wp_roles;
+$roles = $wp_roles->get_names( );
+unset( $wp_roles );
 
-    // Load roles if not set
-    if ( ! isset( $wp_roles ) ) {
-            $wp_roles = new WP_Roles( );
-    }
+if ( ! empty( $post_types_array ) ) {
 
-    $roles = $wp_roles->get_names( );
-    unset( $wp_roles );
+        foreach( $post_types_array as $array ) {	
+                foreach( $array as $active_role=>$active_posttype ) {
+                        if ( array_key_exists ( $active_role, $roles ) ) {
+                                if ( $role_based_help_notes->help_notes_current_user_has_role( $active_role ) ) {
 
-    if ( ! empty( $post_types_array ) ) {
+                                        $tax_args = array(								
+                                                                        'post_type' => $active_posttype, 
+                                                                        'taxonomy' => $active_posttype . 'topics',
+                                                                        'manage_capability' => 'manage_categories_' . $active_posttype,
+                                                                        'page_title' => _x( 'New Topics', 'Title of the New Taxonomy Page', 'role-based-help-notes-text-domain' ),
+                                                                        'menu_title' => sprintf( __( '%1$s Topics', 'role-based-help-notes-text-domain' ), $roles[$active_role] ),
+                                                                        'labels' => array( 
+                                                                                                                //'name' => _x( 'Topics', 'taxonomy plural name for title', 'role-based-help-notes-text-domain' ),
+                                                                                                                'name' => sprintf( __( 'Topics for the %1$s role', 'role-based-help-notes-text-domain' ), $roles[$active_role] ),
+                                                                                                                'singular_name' => _x( 'Topic', 'taxonomy singular name', 'role-based-help-notes-text-domain' ),
+                                                                                                                'search_items' =>  __( 'Search Topics', 'role-based-help-notes-text-domain' ),
+                                                                                                                'all_items' => __( 'All Topics', 'role-based-help-notes-text-domain' ),
+                                                                                                                'parent_item' => __( 'Parent Topic', 'role-based-help-notes-text-domain' ),
+                                                                                                                'parent_item_colon' => __( 'Parent Topic:', 'role-based-help-notes-text-domain' ),
+                                                                                                                'edit_item' => __( 'Edit Topic', 'role-based-help-notes-text-domain' ),
+                                                                                                                'update_item' => __( 'Update Topic', 'role-based-help-notes-text-domain' ),
+                                                                                                                'add_new_item' => __( 'Add New Topic', 'role-based-help-notes-text-domain' ),
+                                                                                                                'new_item_name' => __( 'New Topic Name', 'role-based-help-notes-text-domain' ),
+                                                                                                                'menu_name' => sprintf( __( '%1$s Topics', 'role-based-help-notes-text-domain' ), $roles[$active_role] ),
+                                                                                                        ) 
+                                                                        );
 
-            foreach( $post_types_array as $array ) {	
-                    foreach( $array as $active_role=>$active_posttype ) {
-                            if ( array_key_exists ( $active_role, $roles ) ) {
-                                    if ( $role_based_help_notes->help_notes_current_user_has_role( $active_role ) ) {
-
-                                            $tax_args = array(								
-                                                                            'post_type' => $active_posttype, 
-                                                                            'taxonomy' => $active_posttype . 'topics',
-                                                                            'manage_capability' => 'manage_categories_' . $active_posttype,
-                                                                            'page_title' => _x( 'New Topics', 'Title of the New Taxonomy Page', 'role-based-help-notes-text-domain' ),
-                                                                            'menu_title' => sprintf( __( '%1$s Topics', 'role-based-help-notes-text-domain' ), $roles[$active_role] ),
-                                                                            'labels' => array( 
-                                                                                                                    //'name' => _x( 'Topics', 'taxonomy plural name for title', 'role-based-help-notes-text-domain' ),
-                                                                                                                    'name' => sprintf( __( 'Topics for the %1$s role', 'role-based-help-notes-text-domain' ), $roles[$active_role] ),
-                                                                                                                    'singular_name' => _x( 'Topic', 'taxonomy singular name', 'role-based-help-notes-text-domain' ),
-                                                                                                                    'search_items' =>  __( 'Search Topics', 'role-based-help-notes-text-domain' ),
-                                                                                                                    'all_items' => __( 'All Topics', 'role-based-help-notes-text-domain' ),
-                                                                                                                    'parent_item' => __( 'Parent Topic', 'role-based-help-notes-text-domain' ),
-                                                                                                                    'parent_item_colon' => __( 'Parent Topic:', 'role-based-help-notes-text-domain' ),
-                                                                                                                    'edit_item' => __( 'Edit Topic', 'role-based-help-notes-text-domain' ),
-                                                                                                                    'update_item' => __( 'Update Topic', 'role-based-help-notes-text-domain' ),
-                                                                                                                    'add_new_item' => __( 'Add New Topic', 'role-based-help-notes-text-domain' ),
-                                                                                                                    'new_item_name' => __( 'New Topic Name', 'role-based-help-notes-text-domain' ),
-                                                                                                                    'menu_name' => sprintf( __( '%1$s Topics', 'role-based-help-notes-text-domain' ), $roles[$active_role] ),
-                                                                                                            ) 
-                                                                            );
-
-                                            new RBHN_TAX( $tax_args );
+                                        new RBHN_TAX( $tax_args );
 
 
-                                    }
-                            } 
-                    }
-            }
-    }
+                                }
+                        } 
+                }
+        }
+}
 
-    
-	
-//}
+
 
 ?>

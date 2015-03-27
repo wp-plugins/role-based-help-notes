@@ -125,16 +125,6 @@ class RBHN_Role_Based_Help_Notes {
             
 	}
 
-	/**
-	 * Loads the initial files needed by the plugin.
-	 *
-	 * @return void
-	 */
-	function init_2( ) {
-
-  
-            
-	}
 
 
 	/**
@@ -556,8 +546,7 @@ class RBHN_Role_Based_Help_Notes {
 						// capabilities will be used to limit access to Notes on the front end.
 						if	( ( ! is_admin() && ( $this->help_notes_current_user_has_role( $active_role ) ) ) ||                                                // register help notes if on the front of site only if user has capability
 							( isset( $_GET['page'] ) && ( ( $_GET['page'] == 'notes-settings' ) || ( $_GET['page'] == $this->menu_page ) ) )   ||               // register if on the Help Notes Menu page or in Help Notes settings
-							( isset( $_GET['post_type'] ) && in_array( $_GET['post_type'], $this->enabled_help_notes() ) )  ||                                  // register if not on a Help Note page in admin
-							//( $pagenow == 'options-permalink.php' )  ||																				// register if not on the permalink settings page
+							( isset( $_GET['post_type'] ) && in_array( $_GET['post_type'], $this->enabled_help_notes() ) )  ||                                  // register if not on a Help Note page in admin																				// register if not on the permalink settings page
 							( $pagenow == 'post.php' ) ) {																							// register if on admin post pages
 							
 							call_user_func_array( array( $this, 'help_register_posttype' ), array( $active_role, $roles[$active_role], $active_posttype ) ); 
