@@ -21,6 +21,10 @@ if ( is_admin() ) {
     }
 }
 
+
+
+
+
 /* tabby-responsive-tabs 
  * 
  * If tabby-responsive-tabs is installed and active and tabbed helpnotes are 
@@ -28,17 +32,44 @@ if ( is_admin() ) {
  * contents page.
  */
 
-
-
 /* load the is_plugin_active() method for use on the front of site as its only
  * available on the admin side by default
  */
 include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
-/* If the plugin is not active remove the settings */
-if ( ! is_plugin_active( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) && ! is_plugin_active_for_network( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) ) {
+
+/* If tabby-responsive-tabs is installed and selected in settings to handle the Help Notes
+ * contents page listing then we hook into the available fitlers here
+ */
+
+if ( ( is_plugin_active( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) || 
+      is_plugin_active_for_network( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) ) 
+      && get_option( 'rbhn_tabbed_contents_page' )
+    ) {
+ 
+    //add_filter( 'rbhn_contents_page_before_listing', 'rbhn_tabby_contents_page_before_listing', 10 );
+    add_filter( 'rbhn_contents_page_role_listing_title', 'rbhn_tabby_contents_page_role_listing_title', 10, 3 );
+    add_filter( 'rbhn_contents_page_role_listing', 'rbhn_tabby_contents_page_role_listing', 10 );
+    add_filter( 'rbhn_contents_page_role_final_listing', 'rbhn_tabby_contents_page_role_final_listing', 10 );
+} else {
     add_filter( 'rbhn_settings', 'tabby_responsive_tabs_settings', 10, 1 );
-}     
+}
+
+function rbhn_tabby_contents_page_role_listing_title( $value, $rbhn_content, $posttype_Name  ) {
+    //$content = $rbhn_content . '<h2>' . $posttype_Name . '</h2>';
+    $content = '[tabby title="' . $posttype_Name . '"]';
+    return $content ;
+}
+
+function rbhn_tabby_contents_page_role_listing( $value  ) {
+    $content = $value;
+    return $content ;
+}
+
+function rbhn_tabby_contents_page_role_final_listing( $value  ) {
+    $content = do_shortcode( $value . '[tabbyending]' );
+    return $content ;
+}
 
 function tabby_responsive_tabs_settings( $settings ) {
     

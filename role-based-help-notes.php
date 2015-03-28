@@ -630,33 +630,18 @@ class RBHN_Role_Based_Help_Notes {
 
 	/**
 	 * Returns the post content with the Help Notes index appended.
-         * Support has been added for the "Tabby Responsive Tabs" plugin
 	 *
 	 * @access public
 	 * @param text $content post content	 
 	 * @return $content
 	 */	
 	public function rbhn_add_post_content( $content ) {
-            
-                $tabby_responsive_tabs_plugin_active = false;
-                
-                /* load the is_plugin_active() method for use on the front of site as its only
-                 * available on the admin side by default
-                 */
-                include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-                
-                if ( ( is_plugin_active( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) || 
-                      is_plugin_active_for_network( 'tabby-responsive-tabs/tabby-responsive-tabs.php' ) ) 
-                      && get_option( 'rbhn_tabbed_contents_page' )
-                    ) {
-                    $tabby_responsive_tabs_plugin_active = True;
-                } 
                 
 		if ( ( get_option( 'rbhn_contents_page' ) != "0" ) && is_page( get_option( 'rbhn_contents_page' ) ) && is_main_query( ) ) {
 
 			$active_role_notes = $this->active_help_notes( );
 			
-                        $rbhn_content = "";
+                        $rbhn_content = apply_filters( 'rbhn_contents_page_before_listing', '' );
                         
 			foreach( $active_role_notes as $posttype_selected ) {
 
@@ -680,43 +665,24 @@ class RBHN_Role_Based_Help_Notes {
 							'post_type'    => "$posttype_selected",
 							'post_status'  => ( current_user_can( 'read_private_posts' ) ? 'publish,private' : 'publish' ),
 						);
-					
-					
-					
+			
 				$help_notes_listing = wp_list_pages( $args );
+ 
                                 
-
-                                
-                                
-				if ( $help_notes_listing != "" ) {
-                                        
-					$rbhn_section_content =   '<p>' . $help_notes_listing . '</p>';
+				if ( $help_notes_listing != "" ) {      
+					$rbhn_section_content =   '<p>' . $help_notes_listing . '</p>' ;
 				} else {
 					$rbhn_section_content =   '<p><li>' . _x( 'None yet', 'No help notes are currently available for this role.', 'role-based-help-notes-text-domain' )   . '</li></p></br>';
 				}
-                               
-
-                                if ( $tabby_responsive_tabs_plugin_active ) {
-                                    $rbhn_content =  $rbhn_content .  '[tabby title="' . $posttype_Name . '"]' . $rbhn_section_content   ;
-                                } else {
-                                    $rbhn_content =  $rbhn_content . '<h2>' . $posttype_Name . '</h2>';
-                                    $rbhn_content =  $rbhn_content . $rbhn_section_content;
-                                } 
-                                           
                                 
+                                $rbhn_contents_page_role_listing_title = apply_filters( 'rbhn_contents_page_role_listing_title', $rbhn_content . '<h2>' . $posttype_Name . '</h2>', $rbhn_content, $posttype_Name );
+                                $rbhn_contents_page_role_listing = apply_filters( 'rbhn_contents_page_role_listing', $rbhn_section_content );
+                                $rbhn_content = $rbhn_content . $rbhn_contents_page_role_listing_title . $rbhn_contents_page_role_listing;
+                                            
 			}
                         
-                        
-                        if ( $tabby_responsive_tabs_plugin_active ) {
-                            $content =  $content . do_shortcode( $rbhn_content . '[tabbyending]'  ) ;
-                        } else {
-                            $content =  $content . $rbhn_content ;
-                        }         
-                                        
-                        
-                        
-                        
-			
+                        $content = $content . apply_filters( 'rbhn_contents_page_role_final_listing', $rbhn_content );
+
 		}
 
 		// if selected in settings turn valid url text strings into clickable text.
