@@ -96,16 +96,7 @@ function tabby_responsive_tabs_settings( $settings ) {
 if ( defined( 'BP_ENABLE_ROOT_PROFILES' ) ) {
     // Load class for compatibilty with email-users plugin
     require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/buddypress/buddypress.php' );
-}        
-
-/* user-emails 
- * 
- * Load code to limit availalable/editable roles to limit email users groups availability.
- */
-
-if ( is_plugin_active( 'email-users/email-users.php' ) || is_plugin_active_for_network( 'email-users/email-users.php' ) ) {
-    require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/email-users/class-rbhn-email-users-group-settings.php' );
-}             
+}                  
 
 
 /**
