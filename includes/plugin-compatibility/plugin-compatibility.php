@@ -126,7 +126,7 @@ if ( !function_exists( 'help_notes_available' ) ) {
 		if ( ! array_filter( ( array ) $help_note_post_types ) && ! get_option( 'rbhn_general_enabled' ) )
 			return false;
 
-		//if the current user has the role of an active Help Note.
+		// if the current user has the role of an active writeable Help Note.
 		if ( array_filter( ( array ) $help_note_post_types ) ) {	
 			foreach( $help_note_post_types as $array ) {
 				foreach( $array as $active_role=>$active_posttype ) {
@@ -138,7 +138,9 @@ if ( !function_exists( 'help_notes_available' ) ) {
 		}   
 
 		// General Help Notes 
-                // if enabled and help note posts exist.
+                // we need to check here is there are actually any general help notes that exist
+                // as they can be enabled but nothing writen yet and in this case having a menu
+                // option for the user to help notes is not appicable.
                 if ( get_option('rbhn_general_enabled)') ) {
                     $my_query = new WP_Query( array(
                             'post_type'     => array( 'h_general' ),
