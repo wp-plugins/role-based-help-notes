@@ -83,8 +83,7 @@ class RBHN_Email_Users_Widget extends WP_Widget {
                 }
                         
                 echo $args['before_title'] . $instance['title'] . "" . $args['after_title'];
-               // echo '<ul><a href="' . admin_url( 'admin.php?page=mailusers-send-to-group-page' ) . '">' .   sprintf( __( 'Email everyone with the %1$s role.', 'role-based-help-notes-text-domain' ), '<strong>' . $help_note_name .'</strong>') . " </a></ul>";
-                echo '<button class="readmorebtn" onclick="' . esc_attr('window.location="' . admin_url( 'admin.php?page=mailusers-send-to-group-page' ) . '"') . '">' . sprintf( __( 'Email the %1$s group.', 'role-based-help-notes-text-domain' ), '<strong>' . $help_note_name .'</strong>') . '</button></BR></BR>';
+                echo '<button class="readmorebtn" onclick="' . esc_attr('window.location="' . add_query_arg( array( 'helpnotetype' => $post_type ), admin_url( 'admin.php?page=mailusers-send-to-group-page' )) . '"') . '">' . sprintf( __( 'Email the %1$s group.', 'role-based-help-notes-text-domain' ), '<strong>' . $help_note_name .'</strong>') . '</button></BR></BR>';
                 echo $args['after_widget'];
            }
            
