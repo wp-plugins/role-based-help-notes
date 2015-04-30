@@ -290,7 +290,7 @@ class RBHN_Role_Based_Help_Notes {
 			$post = array(
 						  'post_content'	=> $content,
 						  'post_title'		=> 'Welcome to Help Notes',
-						  'post_status'	 	=> 'publish',//'private',
+						  'post_status'	 	=> 'private',
 						  'post_type'		=> 'page',
 					);  
 
@@ -538,7 +538,9 @@ class RBHN_Role_Based_Help_Notes {
 						// capabilities will be used to limit access to Notes on the front end.
 						if	( ( ! is_admin() && ( $this->help_notes_current_user_has_role( $active_role ) ) ) ||                                                // register help notes if on the front of site only if user has capability
 							( isset( $_GET['page'] ) && ( ( $_GET['page'] == 'notes-settings' ) || ( $_GET['page'] == $this->menu_page ) ) )   ||               // register if on the Help Notes Menu page or in Help Notes settings
-							( isset( $_GET['post_type'] ) && in_array( $_GET['post_type'], $this->enabled_help_notes() ) )  ||                                  // register if not on a Help Note page in admin																				// register if not on the permalink settings page
+							( isset( $_GET['post_type'] ) && in_array( $_GET['post_type'], $this->enabled_help_notes() ) )  ||                                  // register if on a Help Note page in admin				
+							( $pagenow == 'export.php' ) ||                                                                                                     // register if on the tools..export page in admin		
+							( $pagenow == 'admin.php' ) ||                                                                                                      // register if on the admin page which us used for importing via the wordpress importer extension	                                                                                           // register if on the tools..import page in admin
 							( $pagenow == 'post.php' ) ) {																							// register if on admin post pages
 							
 							call_user_func_array( array( $this, 'help_register_posttype' ), array( $active_role, $roles[$active_role], $active_posttype ) ); 

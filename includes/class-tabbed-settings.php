@@ -3,7 +3,7 @@
  * Plugin tabbed settings option class for WordPress themes.
  *
  * @package   class-tabbed-settings.php
- * @version   1.1.7
+ * @version   1.1.8
  * @author    Justin Fletcher <justin@justinandco.com>
  * @copyright Copyright ( c ) 2014, Justin Fletcher
  * @license   http://opensource.org/licenses/gpl-2.0.php GPL v2 or later
@@ -286,6 +286,12 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 		
 			$option	= $args['option'];
 			
+                        if ( array_key_exists( 'post_status', $option ) ) {
+                            $post_status = $option['post_status'];
+                        } else {
+                            $post_status = 'publish';
+                        }
+			
 			?><label for="<?php echo $option['name']; ?>"><?php 
 			wp_dropdown_pages( array( 
 									'name' => $option['name'],
@@ -296,7 +302,8 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 									'sort_column'  	=> 'post_title',
 									'show_option_none' => _x( "- None -", 'text for no page selected', 'role-based-help-notes' ), 
 									'option_none_value' => '0', 
-									'selected' => get_option( $option['name'] ) 
+									'selected' => get_option( $option['name'] ),
+                                                                        'post_status'  => $post_status,
 									) 
 								); ?>
 			</label>

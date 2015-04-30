@@ -32,18 +32,21 @@ If you select the options for extending functionality through other plugins the 
 
 Admin side Plugins..
 
-* [User Switching]( http://wordpress.org/plugins/user-switching/) great tool for admins to switch to test any users access/capability.
-* [Simple Page Ordering]( http://wordpress.org/plugins/simple-page-ordering/) for easing re-ordering of Help Notes.
-* [post_type_switcher]( http://wordpress.org/plugins/post-type-switcher/) plugin by [John James Jacoby]( http://profiles.wordpress.org/johnjamesjacoby/) & [Matthew Gerring]( http://profiles.wordpress.org/beatpanda/), useful to change the role associated with a Help Note after it has been created.
+* [User Switching]( https://wordpress.org/plugins/user-switching/) great tool for admins to switch to test any users access/capability.
+* [Simple Page Ordering]( https://wordpress.org/plugins/simple-page-ordering/) for easing re-ordering of Help Notes.
+* [post_type_switcher]( https://wordpress.org/plugins/post-type-switcher/) plugin by [John James Jacoby]( https://profiles.wordpress.org/johnjamesjacoby/) & [Matthew Gerring]( https://profiles.wordpress.org/beatpanda/), useful to change the role associated with a Help Note after it has been created.
+* [Email Users]( https://wordpress.org/plugins/email-users/ ) allows users within a Help Note group/role to email others.
+
 
 Front End Plugins..
 
-* [Simple FootNotes]( http://wordpress.org/plugins/simple-footnotes/) by [Andrew Nacin]( http://profiles.wordpress.org/nacin/) to add a footnote shortcode [ref][/ref].
-* [disable_comments]( http://wordpress.org/plugins/disable-comments/) by [solarissmoke]( http://profiles.wordpress.org/solarissmoke/) allows you to easily remove comments from 'Help Note' use.
-* [Post type archive in menu]( http://wordpress.org/plugins/post-type-archive-in-menu/) plugin by [lpeharda]( http://profiles.wordpress.org/lpeharda/) to add 'Help Notes' archives to your menus.
+* [Simple FootNotes]( https://wordpress.org/plugins/simple-footnotes/) by [Andrew Nacin]( https://profiles.wordpress.org/nacin/) to add a footnote shortcode [ref][/ref].
+* [Tabby Response Tabs]( https://wordpress.org/plugins/tabby-responsive-tabs/) by [cubecolour]( https://profiles.wordpress.org/numeeja/) to add a tabbed effect to you contents page.
+* [disable_comments]( https://wordpress.org/plugins/disable-comments/) by [solarissmoke]( https://profiles.wordpress.org/solarissmoke/) allows you to easily remove comments from 'Help Note' use.
+* [Post type archive in menu]( https://wordpress.org/plugins/post-type-archive-in-menu/) plugin by [lpeharda]( https://profiles.wordpress.org/lpeharda/) to add 'Help Notes' archives to your menus.
 
-[Plugin site]( http://justinandco.com/plugins/role-based-help-notes/).  	
-[GitHub page]( http://github.com/justinticktock/role-based-help-notes ).
+[Plugin site]( https://justinandco.com/plugins/role-based-help-notes/).  	
+[GitHub page]( https://github.com/justinticktock/role-based-help-notes ).
 
 == Installation ==
 
@@ -56,11 +59,11 @@ Front End Plugins..
 
 = I have a new role how can I add it? =
 
-You will need to use another plugin to manage roles and capabilities such as the [User Role Editor]( http://wordpress.org/extend/plugins/user-role-editor/ "User Role Editor" ) plugin.
+You will need to use another plugin to manage roles and capabilities such as the [User Role Editor]( https://wordpress.org/extend/plugins/user-role-editor/ "User Role Editor" ) plugin.
 
 = Is there a theme template I can modify in my child theme? =
 
-Yes ... [Answer]( http://wordpress.org/support/topic/is-there-a-theme-template-i-can-modify-in-my-child-theme?replies=3#post-4929519)
+Yes ... [Answer]( https://wordpress.org/support/topic/is-there-a-theme-template-i-can-modify-in-my-child-theme?replies=3#post-4929519)
 
 == Screenshots ==
 

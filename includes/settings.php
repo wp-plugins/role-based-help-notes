@@ -97,6 +97,7 @@ class RBHN_Settings {
 																		'label' 	=> __( 'Contents Page', 'role-based-help-notes-text-domain' ),
 																		'desc'		=> __( 'If you wish to create a contents page add a new page and select it here so that the Help Note Contents are displayed.', 'role-based-help-notes-text-domain' ),
 																		'type'      => 'field_page_select_list_option',
+                                                                                                                                                'post_status'   => 'private,publish',
 																		),
 																	array(
 																		'name' 		=> 'rbhn_tabbed_contents_page',
@@ -111,6 +112,7 @@ class RBHN_Settings {
 																		'label' 	=> __( 'Welcome Page', 'role-based-help-notes-text-domain' ),
 																		'desc'		=> __( 'A welcome page has been created and used for your menu landing page, you can edit the page directly to customise or select "- None -" to deactivate.', 'role-based-help-notes-text-domain' ),
 																		'type'      => 'field_page_select_list_option',
+                                                                                                                                                'post_status'   => 'private,publish',
 																		),
 																	array(
 																		'name' 		=> 'rbhn_make_clickable',
