@@ -1,9 +1,8 @@
 <?php
 
 //if uninstall not called from WordPress exit
-if ( !defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
 	exit ( );
-}
 	
 if ( is_multisite( ) ) {
     $blogs = wp_list_pluck( wp_get_sites(), 'blog_id' );
@@ -30,10 +29,17 @@ function rbhn_clean_database( ) {
 		delete_option( 'rbhn_contents_page' );
 		delete_option( 'rbhn_widgets_enabled' );
 		delete_option( 'rbhn_contents_page' );
+		delete_option( 'rbhn_tabbed_contents_page' );
+		delete_option( 'rbhn_welcome_page' );
 		delete_option( 'rbhn_install_date' );
 		delete_option( 'rbhn_make_clickable' );
 
 		// plugin specific database entries
+		
+		
+		delete_option( 'rbhn_email_users' );
+		delete_option( 'rbhn_enable_email_users_roles' );
+                
 		delete_option( 'rbhn_user_role_editor' );
 		delete_option( 'rbhn_menu_items_visibility_control' );
 		delete_option( 'rbhn_user_switching' );
@@ -43,6 +49,9 @@ function rbhn_clean_database( ) {
 		delete_option( 'rbhn_email_post_changes_plugin' );
 		delete_option( 'rbhn_post_type_switcher_plugin' );
 		delete_option( 'rbhn_post_type_archive_in_menu_plugin' );
+		delete_option( 'rbhn_email_users_plugin' );
+		delete_option( 'rbhn_tabby_responsive_tabs' );
+                
 		
 		delete_option( 'rbhn_deactivate_user-switching' );
 		delete_option( 'rbhn_deactivate_simple-page-ordering' );
@@ -51,6 +60,8 @@ function rbhn_clean_database( ) {
 		delete_option( 'rbhn_deactivate_email-post-changes' );
 		delete_option( 'rbhn_deactivate_post-type-switcher' );
 		delete_option( 'rbhn_deactivate_post-type-archive-in-menu' );
+		delete_option( 'rbhn_deactivate_email-users' );
+		delete_option( 'rbhn_deactivate_tabby-responsive' );
 		
 		// user specific database entries
 		delete_user_meta( get_current_user_id( ), 'rbhn_prompt_timeout', $meta_value );
