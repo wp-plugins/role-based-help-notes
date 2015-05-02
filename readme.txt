@@ -3,7 +3,7 @@ Contributors: justinticktock
 Tags: multisite, roles, user, help, notes, cms, documents, groups, teams, collaboration, BuddyPress, intranet
 Requires at least: 3.5
 Tested up to: 4.1
-Stable tag: 1.3.2
+Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,7 +39,7 @@ Admin side Plugins..
 
 
 Front End Plugins..
-
+S	
 * [Simple FootNotes]( https://wordpress.org/plugins/simple-footnotes/) by [Andrew Nacin]( https://profiles.wordpress.org/nacin/) to add a footnote shortcode [ref][/ref].
 * [Tabby Response Tabs]( https://wordpress.org/plugins/tabby-responsive-tabs/) by [cubecolour]( https://profiles.wordpress.org/numeeja/) to add a tabbed effect to you contents page.
 * [disable_comments]( https://wordpress.org/plugins/disable-comments/) by [solarissmoke]( https://profiles.wordpress.org/solarissmoke/) allows you to easily remove comments from 'Help Note' use.
@@ -67,11 +67,13 @@ Yes ... [Answer]( https://wordpress.org/support/topic/is-there-a-theme-template-
 
 == Screenshots ==
 
-1. The Settings Screen.
-2. A front end example Help Note for a user with the 'Proof Reader' role, also showing the user widget listing all proof readers.
-3. Dashboard showing Help Notes at WordPress 3.8
-4. The 'Appearance..Widgets' Admin screen using the 'Help Note Users' widget with the 'twenty fourteen' theme sidebar
-5. The 'twenty fourteen' theme showing the Contents page for a user with 'Proof Reader' role access.
+1. The Settings 'General' Tab Screen.
+2. The Settings 'Role' Tab showing 4 user roles enabled for Private Help Notes.
+3. Dashboard showing the 'Staff Amdin" user role access.
+4. The Settings 'Email Groups' shows when the email-users plugin is active and enables the email/widget Help Note functionality.
+5. The Twenty Fifteen theme showing a help note with the the email and user listing widgets enabled.
+6. The Twenty Fifteen theme showing the contents page for the 'Staff Admin' role, also with the 'Tabby Responsive Tabs' Plugin Active. 
+
 
 == Changelog ==
 
