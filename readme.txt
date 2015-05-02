@@ -72,7 +72,7 @@ Yes ... [Answer]( https://wordpress.org/support/topic/is-there-a-theme-template-
 3. Dashboard showing the 'Staff Admin" user role access.
 4. The Settings 'Email Groups' shows when the email-users plugin is active and enables the email/widget Help Note functionality.
 5. The Twenty Fifteen theme showing a help note with the the email and user listing widgets enabled.
-6. The Twenty Fifteen theme showing the contents page for the 'Staff Admin' role, also with the 'Tabby Responsive Tabs' Plugin Active. 
+6. The Twenty Fifteen theme showing the contents page for the 'Staff Admin' role, also with the 'Tabby Responsive Tabs' Plugin Active. The other tabs for 'Contributor', 'Author' and 'Developer' are present as the logged user also has these roles.
 
 
 == Changelog ==
