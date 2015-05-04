@@ -183,7 +183,7 @@ class RBHN_Capabilities {
 		
 		// option collection to collect active Help Note roles.  
 		$post_types_array = ( array ) get_option( 'rbhn_post_types' );	// collect available roles
-		$post_types_array = array_filter( $post_types_array );			// remove empty entries
+		$post_types_array = array_filter( $post_types_array );		// remove empty entries
 
 		// if get_option( 'rbhn_post_types' ) not empty
 		if ( ! empty( $post_types_array ) ) {
