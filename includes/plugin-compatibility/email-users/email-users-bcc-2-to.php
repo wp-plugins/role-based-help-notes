@@ -20,16 +20,17 @@ $Role_Based_Help_Notes = RBHN_Role_Based_Help_Notes::get_instance( );
 $help_note_roles = $role_based_help_notes->help_notes_role( );
         
 // add conditionals for the filter moving email addresses from  BCC > TO
+$disable_bcc = get_option( 'rbhn_disable_bcc' );
+if ( $disable_bcc ) {
+    if ( isset($_POST['send_targets']) && is_array($_POST['send_targets']) && count($_POST['send_targets']) == 1 ) {    // limit to only where one group is selected on the group email page
+                                                                                                                        // and the email is "To" only one group.          
+        $selected_email_users_group = $_POST['send_targets'];
+        $send_2_role = preg_replace('/role-/', '', $selected_email_users_group) ;
 
-if ( isset($_POST['send_targets']) && is_array($_POST['send_targets']) && count($_POST['send_targets']) == 1 ) {    // limit to only where one group is selected.
-                                                                                                                    // if the email is "To" only one group (implies that it could be a help note related email.          
-    $selected_email_users_group = $_POST['send_targets'];
-    $send_2_role = preg_replace('/role-/', '', $selected_email_users_group) ;
-    
-     if ( in_array( array_shift(array_values($send_2_role)), $help_note_roles ) ) {  // and if the group/role has help notes enabled
-        add_filter('mailusers_manipulate_headers', 'mailusers_rbhn_headers', 10, 3) ;  
-    }     
+         if ( in_array( array_shift(array_values($send_2_role)), $help_note_roles ) ) {  // and if the group/role has help notes enabled
+            add_filter('mailusers_manipulate_headers', 'mailusers_rbhn_headers', 10, 3) ;  
+        }     
+    }
 }
-
 
 ?>

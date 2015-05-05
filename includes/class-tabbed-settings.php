@@ -271,7 +271,7 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 		public function field_checkbox_option( array $args  ) {
 			$option   = $args['option'];
 			$value = get_option( $option['name'] );
-			?><label><input id="setting-<?php echo esc_html( $option['name'] ); ?>" name="<?php echo esc_html( $option['name'] ); ?>" type="checkbox" value="1" <?php checked( '1', $value ); ?> /> <?php echo esc_html( $option['label'] ); ?></label><?php
+			?><label><input id="setting-<?php echo esc_html( $option['name'] ); ?>" name="<?php echo esc_html( $option['name'] ); ?>" type="checkbox" value="1" <?php checked( '1', $value ); ?> /> </label><?php
 			if ( ! empty( $option['desc'] ) )
 			echo ' <p class="description">' .  $option['desc'] . '</p>';
 		}

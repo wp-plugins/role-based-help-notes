@@ -39,6 +39,7 @@ function rbhn_clean_database( ) {
 		
 		delete_option( 'rbhn_email_users' );
 		delete_option( 'rbhn_enable_email_users_roles' );
+		delete_option( 'rbhn_disable_bcc' );
                 
 		delete_option( 'rbhn_user_role_editor' );
 		delete_option( 'rbhn_menu_items_visibility_control' );

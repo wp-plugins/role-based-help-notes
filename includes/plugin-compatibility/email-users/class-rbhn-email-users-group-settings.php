@@ -43,18 +43,32 @@ class RBHN_Email_Users_Settings {
             $rbhn_email_users_settings = 	array(
                                                     'rbhn_email_user_groups' => array( 
                                                             'access_capability' => 'promote_users',
-                                                            'title' 		=> __( 'Email Groups', 'role-based-help-notes-text-domain' ),
+                                                            'title' 		=> __( 'Email Roles', 'role-based-help-notes-text-domain' ),
                                                             'description' 	=> __( 'Allow group email functionality, this uses the "Email Users" Plugin.', 'role-based-help-notes-text-domain' ),
                                                             'form_action'       => admin_url( 'admin-post.php' ),
-                                                            'settings' 		=> array(														
+                                                            'settings' 		=> array(													
                                                                                         array(
                                                                                                 'name' 		=> 'rbhn_enable_email_users_roles',
                                                                                                 'std' 		=> array(),
                                                                                                 'label' 	=> __( 'Add User Role(s)', 'role-based-help-notes-text-domain' ),
                                                                                                 'desc'		=> __( 'Enables the <strong>email_user_groups</strong> custom capability for individual roles, this will then be used by the <strong>email-users</strong> to enable group emailing.', 'role-based-help-notes-text-domain' ),
-                                                                                                'type'      => 'field_roles_for_group_email_checkbox',
-                                                                                                ),					
-                                                                                        ),			
+                                                                                                'type'          => 'field_roles_for_group_email_checkbox',
+                                                                                            ),					
+                                                                                        ),		
+                                                    ),
+                                                    'rbhn_email_to_not_bcc' => array( 
+                                                            'access_capability' => 'manage_options',
+                                                            'title' 		=> __( 'Email Options', 'role-based-help-notes-text-domain' ),
+                                                            'description' 	=> __( 'Further options for the "Email Users" Plugin.', 'role-based-help-notes-text-domain' ),
+                                                            'settings' 		=> array(											
+                                                                                        array(
+                                                                                                'name' 		=> 'rbhn_disable_bcc',
+                                                                                                'std' 		=> true,
+                                                                                                'type'          => 'field_checkbox_option',
+                                                                                                'label' 	=> __( '<strong>BCC</strong> > <strong>TO</strong>', 'role-based-help-notes-text-domain' ),
+                                                                                                'desc'		=> __( 'The <strong>email-users</strong> plugin by default places all group emails into <strong>BCC</strong>, enabling this option will move email addresses from  <strong>BCC</strong> > <strong>TO</strong>. This will allow the recipients to reply all.', 'role-based-help-notes-text-domain' ),
+                                                                                            ),					
+                                                                                        ),		
                                                     ),
                                     );	
 
