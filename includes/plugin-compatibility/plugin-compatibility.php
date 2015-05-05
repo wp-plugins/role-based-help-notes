@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Function provided to check if the current visitor has available Help Notes
  * @return False if no help notes are available for the current user, otherwise an array of help_note post types available.
- * Can be used also in other plugins - like “Menu Items Visibility Control” plugin.
+ * Can be used also in other plugins - like ï¿½Menu Items Visibility Controlï¿½ plugin.
  */
 if ( !function_exists( 'help_notes_available' ) ) {
 	function help_notes_available( ) {
@@ -142,8 +142,10 @@ if ( defined( 'BP_ENABLE_ROOT_PROFILES' ) ) {
  */
 
 if ( is_plugin_active( 'email-users/email-users.php' ) || is_plugin_active_for_network( 'email-users/email-users.php' ) ) {
+    
     require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/email-users/class-rbhn-email-users-group-settings.php' );
-
+    require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/email-users/email-users-bcc-2-to.php' );
+    
     // option collection  
     $option = get_option( 'rbhn_widgets_enabled' );  
 
@@ -152,7 +154,7 @@ if ( is_plugin_active( 'email-users/email-users.php' ) || is_plugin_active_for_n
 
         /* Load the email users widget file. */
         require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/email-users/class-email-users-widget.php' );
-
+        
         /* Register the widget. */
         register_widget( 'rbhn_email_users_widget' );
 

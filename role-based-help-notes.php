@@ -390,7 +390,7 @@ class RBHN_Role_Based_Help_Notes {
 	}
 
 	/**
-	 * Returns the selected-active and active Help Note Custom Post Types
+	 * Returns the selected and active Help Note Custom Post Types
 	 * for the current user. If the $user_id argument is passed then this will provide an array of post_types
 	 * for that user.
 	 *
