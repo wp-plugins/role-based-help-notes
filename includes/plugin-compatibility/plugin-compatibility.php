@@ -144,7 +144,7 @@ if ( defined( 'BP_ENABLE_ROOT_PROFILES' ) ) {
 if ( is_plugin_active( 'email-users/email-users.php' ) || is_plugin_active_for_network( 'email-users/email-users.php' ) ) {
     
     require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/email-users/class-rbhn-email-users-group-settings.php' );
-    require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/email-users/email-users-bcc-2-to.php' );
+    require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/email-users/email-users-custom.php' );
     
     // option collection  
     $option = get_option( 'rbhn_widgets_enabled' );  

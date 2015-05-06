@@ -447,7 +447,7 @@ class RBHN_Role_Based_Help_Notes {
 		} else {
             return true; 
 		}
-			
+
 	}
 	
     /**
