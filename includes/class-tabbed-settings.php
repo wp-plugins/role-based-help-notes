@@ -3,7 +3,7 @@
  * Plugin tabbed settings option class for WordPress themes.
  *
  * @package   class-tabbed-settings.php
- * @version   1.1.8
+ * @version   1.1.9
  * @author    Justin Fletcher <justin@justinandco.com>
  * @copyright Copyright ( c ) 2014, Justin Fletcher
  * @license   http://opensource.org/licenses/gpl-2.0.php GPL v2 or later
@@ -209,15 +209,26 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 			foreach ( $this->settings as $options_group => $section  ) {
 
 				if ( isset( $section['settings'] ) ) {
+                                        
 					foreach ( $section['settings'] as $option ) {
-						if ( isset( $option['std'] ) ) {
-							add_option( $option['name'], $option['std'] );
-						}
-						$sanitize_callback = ( isset( $option['sanitize_callback'] ) ? $option['sanitize_callback'] : "" );
-						register_setting( $options_group, $option['name'], $sanitize_callback );
+                                            
+                                            if ( isset( $option['name'] ) ) {
+                                                
+                                                $defaults = array(
+                                                                'std' => "",
+                                                                'sanitize_callback' => "",
+                                                                'title' => "",
+                                                                'type' => "field_default_option",
+                                                                'label' => "",
+                                                                );
+                                                
+                                                $option = wp_parse_args( $option, $defaults );
+
+						register_setting( $options_group, $option['name'], $option['sanitize_callback'] );
 						add_settings_section( $options_group, $section['title'], array( $this, 'hooks_section_callback' ), $options_group );
-						$callback_type = ( isset( $option['type'] ) ? $option['type'] : "field_default_option" );
-						add_settings_field( $option['name'].'_setting-id', $option['label'], array( $this, $callback_type ), $options_group, $options_group, array( 'option' => $option ) );	
+						add_settings_field( $option['name'].'_setting-id', $option['label'], array( $this, $option['type'] ), $options_group, $options_group, array( 'option' => $option ) );	
+
+                                            }              
 					}
 				}
 			}
@@ -271,7 +282,7 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 		public function field_checkbox_option( array $args  ) {
 			$option   = $args['option'];
 			$value = get_option( $option['name'] );
-			?><label><input id="setting-<?php echo esc_html( $option['name'] ); ?>" name="<?php echo esc_html( $option['name'] ); ?>" type="checkbox" value="1" <?php checked( '1', $value ); ?> /> </label><?php
+			?><label><input id="setting-<?php echo esc_html( $option['name'] ); ?>" name="<?php echo esc_html( $option['name'] ); ?>" type="checkbox" value="1" <?php checked( '1', $value ); ?> /> <?php echo $option['label']; ?></label><?php
 			if ( ! empty( $option['desc'] ) )
 			echo ' <p class="description">' .  $option['desc'] . '</p>';
 		}
@@ -285,7 +296,7 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 		public function field_page_select_list_option( array $args  ) {
 		
 			$option	= $args['option'];
-			
+                        
                         if ( array_key_exists( 'post_status', $option ) ) {
                             $post_status = $option['post_status'];
                         } else {
@@ -519,8 +530,8 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 
 			if ( isset( $this->settings ) && array_key_exists( $plugin_extension_tab_name, $this->settings ) ) {
 
-				$plugin_array = $this->settings[$plugin_extension_tab_name]['settings'];
-				
+				$plugin_array = array_filter( $this->settings[$plugin_extension_tab_name]['settings'] );
+                                
 				foreach ( $plugin_array as $plugin ) {
 
 					if ( get_option( $plugin['name'] ) ) {

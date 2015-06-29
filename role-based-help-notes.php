@@ -83,7 +83,6 @@ class RBHN_Role_Based_Help_Notes {
             /* Add the Help Note Custom Post Types to the author post listing */
             add_filter( 'pre_get_posts', array( $this, 'rbhn_custom_post_author_archive' ) );
 
-
 	}
 	
 	/**
@@ -122,6 +121,10 @@ class RBHN_Role_Based_Help_Notes {
 
             // Load the widgets functions file.
             require_once( HELP_MYPLUGINNAME_PATH . 'includes/widgets.php' );
+			
+			// Load the Help Pointers on the admin side
+            require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-pointers.php' );
+
             
 	}
 
@@ -171,7 +174,7 @@ class RBHN_Role_Based_Help_Notes {
 			
 			// Add short cut link to site front end contents page
 			if ( get_option( 'rbhn_contents_page' ) != 0 ) {
-				echo '<button class="readmorebtn" onclick="' . esc_attr('window.location="' . get_permalink( $contents_page_id ) . '"') . '">Contents page</button></BR></BR>';
+				echo '<button class="readmorebtn" id="contents-button1" onclick="' . esc_attr('window.location="' . get_permalink( $contents_page_id ) . '"') . '">Contents page</button></BR></BR>';
 			}
 		
 			echo $welcome_content;
@@ -617,7 +620,7 @@ class RBHN_Role_Based_Help_Notes {
 			'query_var'           => true,
 			'can_export'          => true,
 			'show_in_nav_menus'   => false,
-			'menu_icon'			  => apply_filters( 'rbhn_dashicon', 'dashicons-format-aside' ),
+			'menu_icon'           => apply_filters( 'rbhn_dashicon', 'dashicons-format-aside' ),
 		);
 
 		register_post_type( $post_type_name, $help_args );
