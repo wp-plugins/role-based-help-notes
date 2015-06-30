@@ -194,20 +194,22 @@ class RBHN_Role_Based_Help_Notes {
         function rbhn_add_contents_page_button( ) {
        
             $contents_page_id = get_option( 'rbhn_contents_page' ) ;
-            $post_type = $_GET['post_type'] ;
-            if ( ! $post_type ) {
-                $post_type = get_post_type( $post );
-            }
+
             
             if ( $contents_page_id ) {
-                global $pagenow;
                 
-
-               // $contents_page_id = get_option( 'rbhn_contents_page' ) ;
-                $contents_page_link = get_permalink( $contents_page_id ) ;
+                global $pagenow, $post;
                 
-
                 if( ( $pagenow == 'post.php' ) || ( $pagenow == 'edit.php' )  ) {
+
+                    if ( isset( $_GET['post_type'] ) ) {
+                        $post_type = $_GET['post_type'] ;
+                    } else {
+                        $post_type = get_post_type( $post );
+                    }
+
+                    $contents_page_link = get_permalink( $contents_page_id ) ;
+
                     ?>
                         <script type="text/javascript">
                             var contents_link = <?php echo json_encode($contents_page_link) ?>;
