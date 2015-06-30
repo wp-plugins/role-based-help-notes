@@ -30,7 +30,7 @@ if ( !class_exists( "RBHN_Pointers" ) )
                 $do_add_script = false;
 
                 // check for pointer requirement
-                if ( ! in_array( 'rbhn-contents-button-pointerrr', $seen_it ) ) {
+                if ( ! in_array( 'rbhn-contents-button-pointer', $seen_it ) ) {
                         // flip the flag enabling pointer scripts and styles to be added later
                         $do_add_script = true;
                         // hook to function that will output pointer script just for pksn1
@@ -100,7 +100,7 @@ if ( !class_exists( "RBHN_Pointers" ) )
 
             $position = array( 'edge' => 'left', 'align' => 'center', 'my' => 'left middle', 'at' => 'right bottom-10' );
 
-            self::print_js( 'rbhn-contents-button-pointerrr', '#contents-button1', array( 
+            self::print_js( 'rbhn-contents-button-pointer', '#contents-button1', array( 
                 'content' => $pointer_content,
                 'position' => $position,
             ) );

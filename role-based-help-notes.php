@@ -57,7 +57,7 @@ class RBHN_Role_Based_Help_Notes {
             add_action( 'after_setup_theme', array( $this, 'constants' ) );
      
             /* Load the resources */
-             add_action( 'after_setup_theme', array( $this, 'includes' ) );
+            add_action( 'after_setup_theme', array( $this, 'includes' ) );
 
             /* Load the Help Notes during the permalinks re-creation */
             add_action( 'generate_rewrite_rules',  array( $this, 'generate_rewrite_rules' ));
@@ -82,6 +82,9 @@ class RBHN_Role_Based_Help_Notes {
 
             /* Add the Help Note Custom Post Types to the author post listing */
             add_filter( 'pre_get_posts', array( $this, 'rbhn_custom_post_author_archive' ) );
+            
+            /* Add a button to the edit page to short cut to the front of site contents */
+            add_action( 'admin_print_footer_scripts', array( $this, 'rbhn_add_contents_page_button' ) );
 
 	}
 	
@@ -174,7 +177,7 @@ class RBHN_Role_Based_Help_Notes {
 			
 			// Add short cut link to site front end contents page
 			if ( get_option( 'rbhn_contents_page' ) != 0 ) {
-				echo '<button class="readmorebtn" id="contents-button1" onclick="' . esc_attr('window.location="' . get_permalink( $contents_page_id ) . '"') . '">Contents page</button></BR></BR>';
+                                echo '<div class="wrap"><h2><a href="' . get_permalink( $contents_page_id ) . '" class="add-new-h2" id="contents-button">Contents page</a></h2></div></BR></BR>';         
 			}
 		
 			echo $welcome_content;
@@ -185,7 +188,39 @@ class RBHN_Role_Based_Help_Notes {
 		}
 		
 	}	
-		
+        
+        
+        
+        function rbhn_add_contents_page_button( ) {
+       
+            $contents_page_id = get_option( 'rbhn_contents_page' ) ;
+            $post_type = $_GET['post_type'] ;
+            if ( ! $post_type ) {
+                $post_type = get_post_type( $post );
+            }
+            
+            if ( $contents_page_id ) {
+                global $pagenow;
+                
+
+               // $contents_page_id = get_option( 'rbhn_contents_page' ) ;
+                $contents_page_link = get_permalink( $contents_page_id ) ;
+                
+
+                if( ( $pagenow == 'post.php' ) || ( $pagenow == 'edit.php' )  ) {
+                    ?>
+                        <script type="text/javascript">
+                            var contents_link = <?php echo json_encode($contents_page_link) ?>;
+                            var post_type = <?php echo json_encode($post_type) ?>;
+                            jQuery('.wrap h2 .add-new-h2').after('<a href= "' + contents_link + '#' + post_type + '" class="add-new-h2">Contents Page</a>');
+                        </script>
+                    <?php
+                }
+            
+            }
+        }
+
+
 	/**
 	 * Initialise the plugin by handling upgrades and loading the text domain. 
 	 *
@@ -674,7 +709,7 @@ class RBHN_Role_Based_Help_Notes {
 					$rbhn_section_content =   '<p><li>' . _x( 'None yet', 'No help notes are currently available for this role.', 'role-based-help-notes-text-domain' )   . '</li></p></br>';
 				}
                                 
-                                $rbhn_contents_page_role_listing_title = apply_filters( 'rbhn_contents_page_role_listing_title', '<h2>' . $posttype_Name . '</h2>', $posttype_Name );
+                                $rbhn_contents_page_role_listing_title = apply_filters( 'rbhn_contents_page_role_listing_title', '<h2 id= ' . $posttype_selected . '>' . $posttype_Name . '</h2>', $posttype_Name );
                                 $rbhn_contents_page_role_listing = apply_filters( 'rbhn_contents_page_role_listing', $rbhn_section_content );
                                 $rbhn_content = $rbhn_content . $rbhn_contents_page_role_listing_title . $rbhn_contents_page_role_listing;
                                             
