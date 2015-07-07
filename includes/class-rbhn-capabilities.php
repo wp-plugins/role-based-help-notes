@@ -20,8 +20,55 @@ class RBHN_Capabilities {
 	
 		// Add Meta Capability Handling 
 		add_filter( 'map_meta_cap', array( $this, 'rbhn_map_meta_cap' ), 10, 4);
+                
+                
+		add_action( 'admin_menu', array( $this, 'rbhn_admin_menu' ), 11 );
+                
+                add_action( 'load-media-new.php', 'rbhn_load_media' );
+                add_action( 'load-media.php', 'rbhn_load_media' );
+                add_action( 'load-upload.php', 'rbhn_load_media' );                
 	}
-		
+        
+
+        public function rbhn_load_media() {
+            if ( ! current_user_can( 'edit_posts' ) )
+                wp_die( __( 'You do not have permission to access the Media Library.', 'role-based-help-notes' ) );
+        }
+
+        public function rbhn_admin_menu() {
+            if ( ! current_user_can( 'edit_posts' ) )
+                remove_menu_page( 'upload.php' );
+        }
+          
+        
+        /**
+         * Hooks the WP map_meta_cap filter.
+         *
+         * @param array $caps An array of capabilities that the user must have to be allowed the requested capability
+         * @param array $cap The specific capability requested
+         * @param int $user_id The ID of the user whose capability we are checking
+         * @param array $args The arguments passed when checking for the capability
+         * @return array An array of capabilities that the user must have to be allowed the requested capability
+         **/
+        function rbhn_map_meta_cap_grant_upload( $caps, $cap, $user_id, $args ) {
+            // We're going to use map_meta_cap to check for the ability to edit the
+            // parent post of the attachment. If the user can edit the parent post,
+            // we will allow them to edit this attachment. This should cover scenarios where
+            // images are uploaded to become a featured image for a video.
+            if ( 'edit_post' == $cap || 'delete_post' == $cap ) {
+                $attachment = get_post( $args[ 0 ] );
+                if ( 'attachment' == $attachment->post_type ) {
+                    $parent = get_post( $attachment->post_parent );
+                    if ( 'video' == $parent->post_type && user_can( $user_id, 'edit_post', $parent->ID ) ) {
+                        return array( 'edit_videos' );
+                    }
+                }
+            }
+            return $caps;
+        }
+        
+
+
 	/**
 	 * rbhn_add_role_caps function.
 	 *
@@ -176,8 +223,11 @@ class RBHN_Capabilities {
 	 * rbhn_map_meta_cap function to add Meta Capability Handling.
 	 *
 	 * @access public
-	 * @param mixed $caps, $cap, $user_id, $args
-	 * @return void
+         * @param array $caps An array of capabilities that the user must have to be allowed the requested capability
+         * @param array $cap The specific capability requested
+         * @param int $user_id The ID of the user whose capability we are checking
+         * @param array $args The arguments passed when checking for the capability
+	 * @return array An array of capabilities that the user must have to be allowed the requested capability
 	 */
 	public function rbhn_map_meta_cap( $caps, $cap, $user_id, $args ) {
 		
@@ -196,6 +246,23 @@ class RBHN_Capabilities {
 				$active_posttype_values =  array_values ( ( array ) $active_posttype );
 				$capability_type = array_shift( $active_posttype_values );
  
+
+                                // add meta cap to grant upload capability
+                                // ref http://simonwheatley.co.uk/2012/07/capabilities-for-custom-post-types-in-wordpress/
+                                if ( 'edit_post' == $cap || 'delete_post' == $cap ) {
+                                        $attachment = get_post( $args[ 0 ] );
+                                    if ( 'attachment' == $attachment->post_type ) {
+                                            $parent = get_post( $attachment->post_parent );
+                                            
+                                        // if the parent of the attachment is a Help Note then grant cap for attachment
+                                        if ( $active_posttype == $parent->post_type && user_can( $user_id, 'edit_post', $parent->ID ) ) {
+                                            // Add to the return cap array the cap that the user must have to be able to edit the media attachment
+                                            $caps[] = 'edit_' . $capability_type;
+                                        }
+                                    }
+                                }
+                                
+    
 				if ( 'edit_' . $capability_type == $cap || 'delete_' . $capability_type == $cap || 'read_' . $capability_type == $cap  ) {
 
 
@@ -246,6 +313,8 @@ class RBHN_Capabilities {
 		/* Return the capabilities required by the user. */
 		return $caps;	
 	}
+    
+
 }
 
 new RBHN_Capabilities( );

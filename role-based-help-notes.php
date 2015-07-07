@@ -653,7 +653,7 @@ class RBHN_Role_Based_Help_Notes {
 			'capabilities'        => $explicitly_mapped_caps,
 			'map_meta_cap'        => true,
 			'hierarchical'        => true,
-			'supports'            => array( 'title', 'editor', 'comments', 'thumbnail', 'page-attributes' , 'revisions', 'author' ),
+			'supports'            => array( 'title', 'editor', 'comments', 'thumbnail', 'page-attributes' , 'revisions', 'author', 'front-end-editor' ),
 			'has_archive'         => true,
 			'rewrite'             => true,
 			'query_var'           => true,
