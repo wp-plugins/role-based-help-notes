@@ -23,6 +23,18 @@ class RBHN_Capabilities {
                 
                 // cater for attachment editing if attached to a Help Note
                 add_filter( 'map_meta_cap', array( $this, 'rbhn_attachment_map_meta_cap' ), null, 4 );   
+    
+                
+                //add to the posts query for attachments to filter to a user
+                add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );
+                
+                
+                
+                
+                
+                //http://jeffreycarandang.com/tutorials/hide-wordpress-posts-media-uploaded-users/
+//               add_filter('pre_get_posts', array( $this, 'rbhn_hide_posts_media_by_other' ) );
+                
                 
 	//	add_action( 'admin_menu', array( $this, 'rbhn_admin_menu' ), 11 );
                 
@@ -281,54 +293,120 @@ class RBHN_Capabilities {
          **/
         
         public function rbhn_attachment_map_meta_cap( $caps, $cap, $user_id, $args ) {
+            
+            
+            
             // We're going to use map_meta_cap to check for the ability to edit the
             // parent post of the attachment. If the user can edit the parent post,
             // we will allow them to edit this attachment. This should cover scenarios where
             // images are uploaded to become a featured image for a video.
-            if ( 'edit_post' == $cap || 'delete_post' == $cap || 'read_post' == $cap ) {
+            // 
+            // 
+            //   if ( 'edit_post' == $cap || 'delete_post' == $cap || 'read_post' == $cap ) {
+            if ( 'edit_post' == $cap || 'read_post' == $cap ) {
                 $post = get_post( $args[ 0 ] );
 		$post_type = get_post_type_object( $post->post_type );
                 
-                
-                
-                
+             
                 if ( 'attachment' == $post->post_type ) {
                     $parent = get_post( $post->post_parent );
-                    $ttt = $parent->post_type;
                     $capability_type = 'h_subscriber';
-                    
+                     
                     if ( 'h_subscriber' == $parent->post_type ) {  // && ( "edit_{$capability_type}" == $cap ) ) {  //user_can( $user_id, 'edit_h_subscriber', $parent->ID ) ) {
                             $caps = array( );
-                            //$post_type = get_post_type_object( 'h_subscriber' );   // <<<< this is not going to work help notes arn't present on the upload page!
-                            //$caps[] = $post_type->cap->edit_h_subscriber;
-                            return array( 'edit_h_subscribers' );
+                            $caps[] = 'edit_h_subscribers';
                       }
                 }
             }
             return $caps;
         }
-                         
+  
+        
 
-// 
-                                /*                                 
-                                //                                                                                                 // add meta cap to grant upload capability
-                                // ref http://simonwheatley.co.uk/2012/07/capabilities-for-custom-post-types-in-wordpress/
-                                if ( 'edit_post' == $cap || 'delete_post' == $cap ) {
-                                        $attachment = get_post( $args[ 0 ] );
-                                    if ( 'attachment' == $attachment->post_type ) {
-                                            $parent = get_post( $attachment->post_parent );
-                                            
-                                        // if the parent of the attachment is a Help Note then grant cap for attachment
-                                        if ( $active_posttype == $parent->post_type && user_can( $user_id, 'edit_post', $parent->ID ) ) {
-                                            // Add to the return cap array the cap that the user must have to be able to edit the media attachment
-                                            $caps[] = $post_type->cap->edit_posts; // 'edit_' . $capability_type;
-                                        }
-                                    }
-                                }
-                                
-                                */
+        public function rbhn_posts_where(  $where, $object  ){
+                    
+            remove_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );    // unhook to stop nested looping error
+            $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
+            $active_help_note_ids = $role_based_help_notes->help_note_ids( );
+            add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );       // rehook
+            
+       
+            global $wpdb;       
+            global $pagenow;
+            
+            if( is_admin() ) {
+
+                $screen = get_current_screen();
+
+                if( is_user_logged_in() && $pagenow == 'upload.php' && $object->post_type = 'attachment' ){
+                    $author = get_current_user_id();
+                   
+                    // limit to attachments that are uploaded by the current user (author)
+                    $where .= ' AND post_author = ' . $author;
+ 
+                    $post_parent__in = implode(',', array_map( 'absint', $active_help_note_ids ) );
+                    $where .= " OR ( $wpdb->posts.post_parent IN ($post_parent__in) ) "; //AND (  $wpdb->post_type = 'attachment'  ) ";
+                    
+                    $where .= " AND post_type != 'revision'";
+       
+                    //ref https://core.trac.wordpress.org/attachment/ticket/13927/post_parent__in.php
+                    // which is by nacin..^^
+//die(var_dump( $object));                    
+                    //$post_parent__in =  $active_help_note_ids;
+                   // $where .= " OR $wpdb->posts.post_parent NOT IN ($post_parent__in)";
+                    //$where .= ' AND post_parent__in=' . $active_help_note_ids;  //array( 'post_parent__in' => array( 2, 5, 12, 14, 20 ) )
+                                    //$where .= " AND ID IN ( SELECT object_id FROM {$wpdb->term_relationships} WHERE term_taxonomy_id=$author )";
+                }
+
+            }
+            
+            return $where;
+        }
+        
+        function rbhn_hide_posts_media_by_other( $query ) {
+
+                global $pagenow;
+
+                if( ( 'edit.php' != $pagenow && 'upload.php' != $pagenow   ) || ! $query->is_admin ){
+                        return $query;
+                }
+
+                if( ! current_user_can( 'manage_options' ) ) {
+                        global $user_ID;
+                        $query->set( 'author', $user_ID );
+                        $query->set( 'post_parent', 55670 );
+                }
+                return $query;
+        }
+       
 }
 
 new RBHN_Capabilities( );
+
+
+//add_filter( 'posts_where', 'devplus_attachments_wpquery_where' );
+function devplus_attachments_wpquery_where( $where ){
+	global $current_user;
+
+	if( is_user_logged_in() ){
+		// we spreken over een ingelogde user
+		if( isset( $_POST['action'] ) ){
+			// library query
+			if( $_POST['action'] == 'query-attachments' ){
+				$where .= ' AND post_author='.$current_user->data->ID;
+			}
+		}
+	}
+
+	return $where;
+}
+
+
+
+
+
+
+
+
 
 ?>

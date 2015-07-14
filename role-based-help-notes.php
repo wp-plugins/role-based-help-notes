@@ -442,40 +442,73 @@ class RBHN_Role_Based_Help_Notes {
 	 */		
 	public function active_help_notes( $user_id = null  ) {
 
-		$active_posttypes = array( );
+            $active_posttypes = array( );
 
-		//  loop through the site roles and create a custom post for each
-		global $wp_roles;
-		
-		// Load roles if not set
-		if ( ! isset( $wp_roles ) ) {
-			$wp_roles = new WP_Roles( );
-		}
+            //  loop through the site roles and create a custom post for each
+            global $wp_roles;
 
-		$roles = $wp_roles->get_names( );
-		unset( $wp_roles );
+            // Load roles if not set
+            if ( ! isset( $wp_roles ) ) {
+                    $wp_roles = new WP_Roles( );
+            }
 
-		// option collection  
-		$general_help_enabled 	= get_option( 'rbhn_general_enabled' );
-		$post_types_array 		= get_option( 'rbhn_post_types' );
+            $roles = $wp_roles->get_names( );
+            unset( $wp_roles );
+
+            // option collection  
+            $general_help_enabled 	= get_option( 'rbhn_general_enabled' );
+            $post_types_array 		= get_option( 'rbhn_post_types' );
 
 	    if ( isset( $general_help_enabled ) && ! empty( $general_help_enabled ) ) {
 			$active_posttypes[] = "h_general"; 
-		}
+            }
 
-		if ( ! empty( $post_types_array ) ) {	
-			foreach( $post_types_array as $array ) {
-				foreach( $array as $active_role=>$h_posttype ) {
-					if ( $this->help_notes_current_user_has_role( $active_role , $user_id ) ) {
-						$active_posttypes[] = $h_posttype;
-					}				
-				}
-			}	
-		}
-		
-		return $active_posttypes;
+            if ( ! empty( $post_types_array ) ) {	
+                    foreach( $post_types_array as $array ) {
+                            foreach( $array as $active_role=>$h_posttype ) {
+                                    if ( $this->help_notes_current_user_has_role( $active_role , $user_id ) ) {
+                                            $active_posttypes[] = $h_posttype;
+                                    }				
+                            }
+                    }	
+            }
+
+            return $active_posttypes;
 	}
-	
+
+	/**
+	 * Returns active Help Note Custom Post Types IDs as an array
+	 * If the $help_notes argument is passed then this will provide an array of post_types
+	 * to find the IDs of.
+	 *
+	 * @access public
+	 * @param integer $help_notes array()/string or null	 
+	 * @return array of active Help Notes post type IDs
+	 */	
+        public function help_note_ids(  $help_notes = null  ){
+
+            $active_help_note_post_types = $this->active_help_notes( );
+                 
+            if ( $help_notes == null ) {
+                $help_notes = $active_help_note_post_types;
+            } else {
+                $help_notes = array_intersect( $active_help_note_post_types, $help_notes );
+            }   
+            
+            
+            $qry_args = array(
+                            'post_type' => $help_notes,
+                            'posts_per_page' => -1, // ALL posts use -1
+                            );
+
+            $help_note_posts = new WP_Query( $qry_args );
+            wp_reset_postdata();
+
+            $help_note_post_ids = wp_list_pluck( $help_note_posts->posts, 'ID' ); 
+            return $help_note_post_ids;                                                          
+        }            
+                    
+                    
 	public function is_single_help_note( ) {
 	
        // drop out if not a single Help Note page or Help Note Archive page.
