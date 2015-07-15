@@ -21,6 +21,10 @@ class RBHN_Capabilities {
 		// Add Meta Capability Handling 
 		add_filter( 'map_meta_cap', array( $this, 'rbhn_map_meta_cap' ), 10, 4);
                 
+ 		// Add upload_files Capability  
+		add_filter( 'map_meta_cap', array( $this, 'rbhn_upload_file_map_meta_cap' ), 10, 4);               
+                
+                
                 // cater for attachment editing if attached to a Help Note
                 add_filter( 'map_meta_cap', array( $this, 'rbhn_attachment_map_meta_cap' ), null, 4 );   
                 
@@ -291,7 +295,6 @@ class RBHN_Capabilities {
          * @return array An array of capabilities that the user must have to be allowed the requested capability
          **/
         public function rbhn_attachment_map_meta_cap( $caps, $cap, $user_id, $args ) {
-            //echo var_dump($caps); // echo capabilityies to the screen for debuging
             
             
             // We're going to use map_meta_cap to check for the ability to edit the
@@ -308,7 +311,8 @@ class RBHN_Capabilities {
              
                 if ( 'attachment' == $post->post_type ) {
                     $parent = get_post( $post->post_parent );
-                    $capability_type = 'h_subscriber';
+                    
+                    
                      
                     if ( 'h_subscriber' == $parent->post_type ) {  
                             $caps = array( );
@@ -319,6 +323,46 @@ class RBHN_Capabilities {
             return $caps;
         }
   
+
+        /**
+         * Hooks the WP map_meta_cap filter.
+         *
+         * @param array $caps An array of capabilities that the user must have to be allowed the requested capability
+         * @param array $cap The specific capability requested
+         * @param int $user_id The ID of the user whose capability we are checking
+         * @param array $args The arguments passed when checking for the capability
+         * @return array An array of capabilities that the user must have to be allowed the requested capability
+         **/
+        public function rbhn_upload_file_map_meta_cap( $caps, $cap, $user_id, $args ) {
+            
+            if ( 'upload_files' == $cap ) {
+                
+                echo var_dump($caps); // echo capabilityies to the screen for debuging
+                
+                $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );               ;
+		$active_roles = $role_based_help_notes->help_notes_role( );
+		$active_roles = array_filter( ( array ) $active_roles );  // Filter out any empty entries, if non active.	
+
+		if ( empty( $active_roles ) ) {
+                    return $caps;
+                }
+           
+                $caps = array( );
+               // $caps[] = 'upload_files_h_subscriber'; 
+                //return $caps;  
+                
+                foreach( $active_roles as $role ) {
+                    
+                    if ( $role_based_help_notes->help_notes_current_user_has_role( $role ) ) {
+                        $caps[] = 'upload_files_' . $role_based_help_notes->clean_post_type_name( $role ); 
+                    }
+                    //return $caps;  
+                } 
+               // die(var_dump($caps)) ;  
+            }
+    
+            return $caps;
+        }
         
         /**
          * Hooks the WP_Query $where filter to limit further the Media files see in the upload.php admin screen.
