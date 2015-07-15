@@ -617,7 +617,8 @@ class RBHN_Role_Based_Help_Notes {
 							( $pagenow == 'export.php' ) ||                                                                                                     // register if on the tools..export page in admin		
 							( $pagenow == 'admin.php' ) ||                                                                                                      // register if on the admin page which us used for importing via the wordpress importer extension
 							( $pagenow == 'post.php' ) ||                                                                                                       // register if on the admin page for editing help notes
-							( $pagenow == 'edit.php' )                                                                                                          // register if on the admin page listing the help notes with quick edit functionality
+							( $pagenow == 'edit.php' ) ||                                                                                                       // register if on the admin page for editing help notes
+							( $pagenow == 'upload.php' )                                                                                                           // register if on the admin page listing the help notes with quick edit functionality
 							) { 		
 							
 							call_user_func_array( array( $this, 'help_register_posttype' ), array( $active_role, $roles[$active_role], $active_posttype ) ); 

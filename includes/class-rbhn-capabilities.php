@@ -23,24 +23,23 @@ class RBHN_Capabilities {
                 
                 // cater for attachment editing if attached to a Help Note
                 add_filter( 'map_meta_cap', array( $this, 'rbhn_attachment_map_meta_cap' ), null, 4 );   
-    
                 
                 //add to the posts query for attachments to filter to a user
                 add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );
                 
                 
                 
-                
-                
-                //http://jeffreycarandang.com/tutorials/hide-wordpress-posts-media-uploaded-users/
-//               add_filter('pre_get_posts', array( $this, 'rbhn_hide_posts_media_by_other' ) );
-                
-                
-	//	add_action( 'admin_menu', array( $this, 'rbhn_admin_menu' ), 11 );
-                
-              //  add_action( 'load-media-new.php', 'rbhn_load_media' );
-              //  add_action( 'load-media.php', 'rbhn_load_media' );
-              //  add_action( 'load-upload.php', 'rbhn_load_media' );                
+
+
+                                                                                    //http://jeffreycarandang.com/tutorials/hide-wordpress-posts-media-uploaded-users/
+                                                                    //               add_filter('pre_get_posts', array( $this, 'rbhn_hide_posts_media_by_other' ) );
+
+
+                                                                            //	add_action( 'admin_menu', array( $this, 'rbhn_admin_menu' ), 11 );
+
+                                                                                  //  add_action( 'load-media-new.php', 'rbhn_load_media' );
+                                                                                  //  add_action( 'load-media.php', 'rbhn_load_media' );
+                                                                                  //  add_action( 'load-upload.php', 'rbhn_load_media' );                
 	}
         
 
@@ -291,9 +290,8 @@ class RBHN_Capabilities {
          * @param array $args The arguments passed when checking for the capability
          * @return array An array of capabilities that the user must have to be allowed the requested capability
          **/
-        
         public function rbhn_attachment_map_meta_cap( $caps, $cap, $user_id, $args ) {
-            
+            //echo var_dump($caps); // echo capabilityies to the screen for debuging
             
             
             // We're going to use map_meta_cap to check for the ability to edit the
@@ -312,7 +310,7 @@ class RBHN_Capabilities {
                     $parent = get_post( $post->post_parent );
                     $capability_type = 'h_subscriber';
                      
-                    if ( 'h_subscriber' == $parent->post_type ) {  // && ( "edit_{$capability_type}" == $cap ) ) {  //user_can( $user_id, 'edit_h_subscriber', $parent->ID ) ) {
+                    if ( 'h_subscriber' == $parent->post_type ) {  
                             $caps = array( );
                             $caps[] = 'edit_h_subscribers';
                       }
@@ -322,9 +320,20 @@ class RBHN_Capabilities {
         }
   
         
-
+        /**
+         * Hooks the WP_Query $where filter to limit further the Media files see in the upload.php admin screen.
+         *
+         * @param string $where of the current WP_Query where sql statement part
+         * @param array $object is the WP_Query object
+         * @return array $where 
+         **/
         public function rbhn_posts_where(  $where, $object  ){
-                    
+            
+            // drop out if the user has already permission to see all media.
+            if ( current_user_can( 'edit_posts' ) ) {
+                return $where;
+            }
+            
             remove_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );    // unhook to stop nested looping error
             $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
             $active_help_note_ids = $role_based_help_notes->help_note_ids( );
@@ -334,32 +343,25 @@ class RBHN_Capabilities {
             global $wpdb;       
             global $pagenow;
             
-            if( is_admin() ) {
+            if( ! is_admin() ) {
+                return $where;
+            }
 
-                $screen = get_current_screen();
+            $screen = get_current_screen();
 
-                if( is_user_logged_in() && $pagenow == 'upload.php' && $object->post_type = 'attachment' ){
-                    $author = get_current_user_id();
-                   
-                    // limit to attachments that are uploaded by the current user (author)
-                    $where .= ' AND post_author = ' . $author;
- 
-                    $post_parent__in = implode(',', array_map( 'absint', $active_help_note_ids ) );
-                    $where .= " OR ( $wpdb->posts.post_parent IN ($post_parent__in) ) "; //AND (  $wpdb->post_type = 'attachment'  ) ";
-                    
-                    $where .= " AND post_type != 'revision'";
-       
-                    //ref https://core.trac.wordpress.org/attachment/ticket/13927/post_parent__in.php
-                    // which is by nacin..^^
-//die(var_dump( $object));                    
-                    //$post_parent__in =  $active_help_note_ids;
-                   // $where .= " OR $wpdb->posts.post_parent NOT IN ($post_parent__in)";
-                    //$where .= ' AND post_parent__in=' . $active_help_note_ids;  //array( 'post_parent__in' => array( 2, 5, 12, 14, 20 ) )
-                                    //$where .= " AND ID IN ( SELECT object_id FROM {$wpdb->term_relationships} WHERE term_taxonomy_id=$author )";
-                }
+            if( is_user_logged_in() && $pagenow == 'upload.php' && $object->post_type = 'attachment' ){
+                $author = get_current_user_id();
+
+                // limit to attachments that are uploaded by the current user (author)
+                $where .= ' AND post_author = ' . $author;
+
+                $post_parent__in = implode(',', array_map( 'absint', $active_help_note_ids ) );
+                $where .= " OR ( $wpdb->posts.post_parent IN ($post_parent__in) ) "; //AND (  $wpdb->post_type = 'attachment'  ) ";
+
+                $where .= " AND post_type != 'revision'";
 
             }
-            
+ 
             return $where;
         }
         
