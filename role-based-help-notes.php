@@ -533,14 +533,16 @@ class RBHN_Role_Based_Help_Notes {
 	 * @return array of active Help Notes roles
 	 */		
 	public function help_notes_role( $help_note_post_type  = null ) {
-		$post_types_array 		= get_option( 'rbhn_post_types' );
+            
+		$post_types_array   = get_option( 'rbhn_post_types' );
 
 		$help_note_role = array( );
+                
 		if ( ! empty( $post_types_array ) ) {
 			foreach( $post_types_array as $array ) {	
 				foreach( $array as $active_role=>$active_posttype ) {
 					if ( $help_note_post_type == $active_posttype ) {
-						return $active_role; 
+                                            return $active_role; 
 					}
 					$help_note_role[] = $active_role;
 				}

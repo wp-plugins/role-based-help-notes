@@ -24,29 +24,13 @@ class RBHN_Capabilities {
  		// Add upload_files Capability  
 		add_filter( 'map_meta_cap', array( $this, 'rbhn_upload_file_map_meta_cap' ), 10, 4);               
                 
-                
                 // cater for attachment editing if attached to a Help Note
                 add_filter( 'map_meta_cap', array( $this, 'rbhn_attachment_map_meta_cap' ), null, 4 );   
                 
                 //add to the posts query for attachments to filter to a user
                 add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );
-                
-                
-                
-
-
-                                                                                    //http://jeffreycarandang.com/tutorials/hide-wordpress-posts-media-uploaded-users/
-                                                                    //               add_filter('pre_get_posts', array( $this, 'rbhn_hide_posts_media_by_other' ) );
-
-
-                                                                            //	add_action( 'admin_menu', array( $this, 'rbhn_admin_menu' ), 11 );
-
-                                                                                  //  add_action( 'load-media-new.php', 'rbhn_load_media' );
-                                                                                  //  add_action( 'load-media.php', 'rbhn_load_media' );
-                                                                                  //  add_action( 'load-upload.php', 'rbhn_load_media' );                
 	}
         
-
         public function rbhn_load_media() {
             if ( ! current_user_can( 'edit_posts' ) )
                 wp_die( __( 'You do not have permission to access the Media Library.', 'role-based-help-notes' ) );
@@ -99,8 +83,7 @@ class RBHN_Capabilities {
 					$role->add_cap( "edit_published_{$capability_type}s" );
 					$role->add_cap( "create_{$capability_type}s" );
 					$role->add_cap( "manage_categories_{$capability_type}" );
-					$role->add_cap( "upload_files_{$capability_type}" );
-//add clean up and uninstall parts.. for upload_files					
+					$role->add_cap( "upload_files_{$capability_type}" );				
 					
 					// As of 12/11/2014 help notes are created all the time so Admins are no-longer given access by default 
 					// they must be in a role to get the Help Notes.  This is for the flush of permalinks to save correctly
@@ -143,9 +126,9 @@ class RBHN_Capabilities {
                                         "edit_private_{$capability_type}s",
                                         "edit_published_{$capability_type}s",
                                         "create_{$capability_type}s",
-                                        "manage_categories_{$capability_type}"
+                                        "manage_categories_{$capability_type}",
+                                        "upload_files_{$capability_type}"
                                 );
-
 
 		global $wp_roles;
 		
@@ -295,31 +278,65 @@ class RBHN_Capabilities {
          * @return array An array of capabilities that the user must have to be allowed the requested capability
          **/
         public function rbhn_attachment_map_meta_cap( $caps, $cap, $user_id, $args ) {
-            
-            
+      
             // We're going to use map_meta_cap to check for the ability to edit the
             // parent post of the attachment. If the user can edit the parent post,
             // we will allow them to edit this attachment. This should cover scenarios where
             // images are uploaded to become a featured image for a video.
-            // 
-            // 
-            //   if ( 'edit_post' == $cap || 'delete_post' == $cap || 'read_post' == $cap ) {
-            if ( 'edit_post' == $cap || 'read_post' == $cap ) {
+
+            if ( 'edit_post' == $cap || 'delete_post' == $cap || 'read_post' == $cap ) {
                 $post = get_post( $args[ 0 ] );
 		$post_type = get_post_type_object( $post->post_type );
-                
-             
+
+         
                 if ( 'attachment' == $post->post_type ) {
+                   
                     $parent = get_post( $post->post_parent );
+
+                    $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
+                    $active_roles = $role_based_help_notes->help_notes_role( );
+                    $active_roles = array_filter( ( array ) $active_roles );  // Filter out any empty entries, if non active.	
+
+                    if ( empty( $active_roles ) ) {
+                        return $caps;
+                    }
+ 
+                    $caps = array( );
+
+                    foreach( $active_roles as $role ) {  
+                        $help_note_post_Type = $role_based_help_notes->clean_post_type_name( $role );
                     
-                    
-                     
-                    if ( 'h_subscriber' == $parent->post_type ) {  
-                            $caps = array( );
-                            $caps[] = 'edit_h_subscribers';
-                      }
+                        if ( $help_note_post_Type == $parent->post_type ) {
+  
+                            /* If editing a attachment with a parent help note, assign the required capability. */
+                            if ( "edit_post" == $cap )  {
+                                $caps[] = "edit_{$help_note_post_Type}s"; 
+
+                            }
+
+                             
+                            // If deleting a attachment with a parent help note, assign the required capability. 
+                            if ( "delete_post" == $cap )  {
+                                
+                                if( isset( $post->post_author ) && $user_id == $post->post_author ) { 
+                                    $caps[] = "delete_{$help_note_post_Type}s";
+                                } elseif ( isset( $post_type->cap->delete_others_posts ) ) {
+                                    $caps[] = "delete_others_{$help_note_post_Type}s";
+                                }            
+                            }
+
+                            /* If reading a attachment with a parent help note, assign the required capability. 
+                             * this is never used by Wordpress's capabilities for attachements as edit_posts is used.
+                             *  if ( "edit_read" == $cap )  {
+                             *      $caps[] = "read_{$help_note_post_Type}s"; //$caps[] = $parent->post_type->cap->read_posts;
+                             *  }   
+                             */
+
+                        }
+                    } 
                 }
             }
+            
             return $caps;
         }
   
@@ -337,7 +354,7 @@ class RBHN_Capabilities {
             
             if ( 'upload_files' == $cap ) {
                 
-                echo var_dump($caps); // echo capabilityies to the screen for debuging
+               // echo var_dump($caps); // echo capabilityies to the screen for debuging
                 
                 $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );               ;
 		$active_roles = $role_based_help_notes->help_notes_role( );
@@ -348,8 +365,6 @@ class RBHN_Capabilities {
                 }
            
                 $caps = array( );
-               // $caps[] = 'upload_files_h_subscriber'; 
-                //return $caps;  
                 
                 foreach( $active_roles as $role ) {
                     
@@ -372,13 +387,18 @@ class RBHN_Capabilities {
          * @return array $where 
          **/
         public function rbhn_posts_where(  $where, $object  ){
+    
+            /* drop out if the user has already permission to see all media.
+             * 'publish_posts' is given to authors and above by WordPress so we are using this 
+             * as the cap to check against.  This is since with Help Notes acitive we have given all Help Note
+             * users the upload_files capaiblity we can't check against that.
+             */
             
-            // drop out if the user has already permission to see all media.
-            if ( current_user_can( 'edit_posts' ) ) {
+            if ( current_user_can( 'publish_posts' ) ) { 
                 return $where;
             }
-            
-            remove_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );    // unhook to stop nested looping error
+
+            remove_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );    // unhook to stop infinite nested looping error
             $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
             $active_help_note_ids = $role_based_help_notes->help_note_ids( );
             add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );       // rehook
@@ -391,9 +411,10 @@ class RBHN_Capabilities {
                 return $where;
             }
 
-            $screen = get_current_screen();
-
-            if( is_user_logged_in() && $pagenow == 'upload.php' && $object->post_type = 'attachment' ){
+            if( is_user_logged_in() && $object->post_type = 'attachment' && ( 
+                    $pagenow == 'upload.php'       // on the media admin page
+                 || $pagenow == 'post.php'    // or on the admin add media to post page  << this part is a popup so not getting caught !!!!!!!!!!!!!!!!!
+                )){
                 $author = get_current_user_id();
 
                 // limit to attachments that are uploaded by the current user (author)
@@ -428,31 +449,3 @@ class RBHN_Capabilities {
 }
 
 new RBHN_Capabilities( );
-
-
-//add_filter( 'posts_where', 'devplus_attachments_wpquery_where' );
-function devplus_attachments_wpquery_where( $where ){
-	global $current_user;
-
-	if( is_user_logged_in() ){
-		// we spreken over een ingelogde user
-		if( isset( $_POST['action'] ) ){
-			// library query
-			if( $_POST['action'] == 'query-attachments' ){
-				$where .= ' AND post_author='.$current_user->data->ID;
-			}
-		}
-	}
-
-	return $where;
-}
-
-
-
-
-
-
-
-
-
-?>
