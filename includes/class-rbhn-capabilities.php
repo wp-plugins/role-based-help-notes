@@ -462,7 +462,7 @@ class RBHN_Capabilities {
             $attachments_with_parent_help_notes     = get_posts( array( 'post_type' => 'attachment', 'fields' => 'ids', 'post_parent__in' => $active_help_note_ids ) );  //, 'post_type' => array( 'attachment' ) , 
             $show_attachments = array_merge( $attachments_with_parent_help_notes, $current_user_attachments );
             $query['post__in'] = $show_attachments;        
-        
+            wp_reset_postdata();
             return $query;     
         }
 }
