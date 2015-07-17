@@ -29,6 +29,7 @@ class RBHN_Capabilities {
                 
                 //add to the posts query for attachments to filter to a user
                 add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );
+                add_filter( 'ajax_query_attachments_args', array( $this, 'rbhn_limit_current_user_attachments' ), 10, 1 );
 	}
         
         public function rbhn_load_media() {
@@ -266,7 +267,6 @@ class RBHN_Capabilities {
 		return $caps;	
 	}
     
-//upload_files add cap or cpt
 
         /**
          * Hooks the WP map_meta_cap filter.
@@ -411,17 +411,14 @@ class RBHN_Capabilities {
                 return $where;
             }
 
-            if( is_user_logged_in() && $object->post_type = 'attachment' && ( 
-                    $pagenow == 'upload.php'       // on the media admin page
-                 || $pagenow == 'post.php'    // or on the admin add media to post page  << this part is a popup so not getting caught !!!!!!!!!!!!!!!!!
-                )){
+            if( is_user_logged_in() && $object->post_type = 'attachment' && $pagenow == 'upload.php'){
                 $author = get_current_user_id();
 
                 // limit to attachments that are uploaded by the current user (author)
                 $where .= ' AND post_author = ' . $author;
 
                 $post_parent__in = implode(',', array_map( 'absint', $active_help_note_ids ) );
-                $where .= " OR ( $wpdb->posts.post_parent IN ($post_parent__in) ) "; //AND (  $wpdb->post_type = 'attachment'  ) ";
+                $where .= " OR ( $wpdb->posts.post_parent IN ( $post_parent__in ) ) "; //AND (  $wpdb->post_type = 'attachment'  ) ";
 
                 $where .= " AND post_type != 'revision'";
 
@@ -429,23 +426,46 @@ class RBHN_Capabilities {
  
             return $where;
         }
+
         
-        function rbhn_hide_posts_media_by_other( $query ) {
+        
+        /**
+         * Hooks the ajax_query_attachments_args filter to limit the Media files seen on the add media popup screen.
+         *
+         * @param array $query is the WP_Query query
+         * @return array $query 
+         **/
+        public function rbhn_limit_current_user_attachments(  $query = array()  ){
 
-                global $pagenow;
-
-                if( ( 'edit.php' != $pagenow && 'upload.php' != $pagenow   ) || ! $query->is_admin ){
-                        return $query;
-                }
-
-                if( ! current_user_can( 'manage_options' ) ) {
-                        global $user_ID;
-                        $query->set( 'author', $user_ID );
-                        $query->set( 'post_parent', 55670 );
-                }
+            /* drop out if the user has already permission to see all media.
+             * 'publish_posts' is given to authors and above by WordPress so we are using this 
+             * as the cap to check against.  This is since with Help Notes acitive we have given all Help Note
+             * users the upload_files capaiblity we can't check against that.
+             */
+                        
+            if ( current_user_can( 'publish_posts' ) ) { 
                 return $query;
+            }
+
+            $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
+            $active_help_note_ids = $role_based_help_notes->help_note_ids( );
+            $post_parent__in = implode(',', array_map( 'absint', $active_help_note_ids ) );
+            
+            global $wpdb;   
+
+            /* join 2 queries together 
+             * 1) one for finding the attchments that the current user has authored.
+             * 2) the second to find the attachments that are attached to helpnotes that the current user has access to
+             */
+            $user_id = get_current_user_id();
+            $current_user_attachments               = get_posts( array( 'post_type' => 'attachment', 'fields' => 'ids', 'author' => $user_id ) );
+            $attachments_with_parent_help_notes     = get_posts( array( 'post_type' => 'attachment', 'fields' => 'ids', 'post_parent__in' => $active_help_note_ids ) );  //, 'post_type' => array( 'attachment' ) , 
+            $show_attachments = array_merge( $attachments_with_parent_help_notes, $current_user_attachments );
+            $query['post__in'] = $show_attachments;        
+        
+            return $query;     
         }
-       
 }
 
 new RBHN_Capabilities( );
+
