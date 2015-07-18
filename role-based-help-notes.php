@@ -177,7 +177,7 @@ class RBHN_Role_Based_Help_Notes {
 			
 			// Add short cut link to site front end contents page
 			if ( get_option( 'rbhn_contents_page' ) != 0 ) {
-                                echo '<div class="wrap"><h2><a href="' . get_permalink( $contents_page_id ) . '" class="add-new-h2" id="contents-button">' . __( 'Contents Page', 'role-based-help-notes-text-domain' ) . '</a></h2></div></BR></BR>';         
+                                echo '<div class="wrap"><h2><a href="' . get_permalink( $contents_page_id ) . '" id="contents-button1" class="add-new-h2" id="contents-button">' . __( 'Contents Page', 'role-based-help-notes-text-domain' ) . '</a></h2></div></BR></BR>';         
 			}
 		
 			echo $welcome_content;
@@ -216,7 +216,7 @@ class RBHN_Role_Based_Help_Notes {
                             var contents_link = <?php echo json_encode($contents_page_link) ?>;
                             var contents_page_button_text = <?php echo json_encode($contents_page_button_text) ?>;
                             var post_type = <?php echo json_encode($post_type) ?>;
-                            jQuery('.wrap h2 .add-new-h2').after('<a href= "' + contents_link + '#' + post_type + '" class="add-new-h2">' + contents_page_button_text + '</a>');
+                            jQuery('.wrap h2 .add-new-h2').after('<a href= "' + contents_link + '#' + post_type + '" id="contents-button1" class="add-new-h2">' + contents_page_button_text + '</a>');
                         </script>
                     <?php
                 }

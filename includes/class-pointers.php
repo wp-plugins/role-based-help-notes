@@ -1,14 +1,5 @@
 <?php
-/*
-Plugin Name: PK Simplenote
-Plugin URI: http://structurewebdev.com/
-Description: Sandbox plugin created and used by Paul Kaiser for tutorials.
-Author: Paul Kaiser
-Version: 1.0
-Author URI: http://paulekaiser.com/
-*/
 	
-// Define our plugin's wrapper class
 if ( !class_exists( "RBHN_Pointers" ) )
 {
     class RBHN_Pointers
@@ -17,33 +8,6 @@ if ( !class_exists( "RBHN_Pointers" ) )
         {
                 // This adds scripts for ANY admin screen
                 add_action( 'admin_enqueue_scripts', array( $this, 'RBHN_Pointers_admin_scripts' ) );
-        }
-
-        function RBHN_Pointers_admin_scripts() {
-                // You might of course have other scripts enqueued here,
-                // for functionality other than WordPress Pointers.
-
-                // WordPress Pointer Handling
-                // find out which pointer ids this user has already seen
-                $seen_it = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
-                // at first assume we don't want to show pointers
-                $do_add_script = false;
-
-                // check for pointer requirement
-                if ( ! in_array( 'rbhn-contents-button-pointer', $seen_it ) ) {
-                        // flip the flag enabling pointer scripts and styles to be added later
-                        $do_add_script = true;
-                        // hook to function that will output pointer script just for pksn1
-                        add_action( 'admin_print_footer_scripts', array( $this, 'pointer_rbhn_content_button_footer_script' ) );
-                }
-
-                // now finally enqueue scripts and styles if we ended up with do_add_script == TRUE
-                if ( $do_add_script ) {
-                        // add JavaScript for WP Pointers
-                        wp_enqueue_script( 'wp-pointer' );
-                        // add CSS for WP Pointers
-                        wp_enqueue_style( 'wp-pointer' );
-                }
         }
 
         
@@ -90,12 +54,45 @@ if ( !class_exists( "RBHN_Pointers" ) )
 		</script>
 		<?php
 	}
+
+        function RBHN_Pointers_admin_scripts() {
+            
+                // WordPress Pointer Handling
+                // find out which pointer ids this user has already seen
+                $seen_it = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
+                // at first assume we don't want to show pointers
+                $do_add_script = false;
+
+                // check contents-button for pointer requirement
+                if ( ! in_array( 'rbhn-contents-button-pointer', $seen_it ) ) {
+                        // flip the flag enabling pointer scripts and styles to be added later
+                        $do_add_script = true;
+                        
+                        // hook to output pointer script
+                        add_action( 'admin_print_footer_scripts', array( $this, 'pointer_rbhn_content_button_footer_script' ) );
+                }
+                
+                // check add-media-button for pointer requirement
+                if ( ! in_array( 'rbhn-add-media-button-pointer', $seen_it ) ) {
+                        // flip the flag enabling pointer scripts and styles to be added later
+                        $do_add_script = true;
+                        
+                        // hook to output pointer script
+                        add_action( 'admin_print_footer_scripts', array( $this, 'pointer_rbhn_add_media_footer_script' ) );
+                }
+                
+                if ( $do_add_script ) {
+                        // add JavaScript for WP Pointers
+                        wp_enqueue_script( 'wp-pointer' );
+                        // add CSS for WP Pointers
+                        wp_enqueue_style( 'wp-pointer' );
+                }
+        }
 		
-        // Each pointer has its own function responsible for putting appropriate JavaScript into footer
+        // content_button pointer has its own function responsible for putting appropriate JavaScript into footer
         function pointer_rbhn_content_button_footer_script() {
 
-            // Build the main content of your pointer balloon in a variable
-            $pointer_content = '<h3>' . __('Front of site Content Page', 'role-based-help-notes') . '.</h3>'; // Title should be <h3> for proper formatting.
+            $pointer_content = '<h3>' . __('Front of site Content Page', 'role-based-help-notes') . '.</h3>'; 
             $pointer_content .= '<p>'. __('This provides a quick link to the front of site contents page.  Useful when dealing with lots of Help Notes.', 'role-based-help-notes') ;
 
             $position = array( 'edge' => 'left', 'align' => 'center', 'my' => 'left middle', 'at' => 'right bottom-10' );
@@ -107,6 +104,20 @@ if ( !class_exists( "RBHN_Pointers" ) )
 
         } 
 
+        // content_button pointer has its own function responsible for putting appropriate JavaScript into footer
+        function pointer_rbhn_add_media_footer_script() {
+
+            $pointer_content = '<h3>' . __('Upload Media', 'role-based-help-notes') . '.</h3>'; 
+            $pointer_content .= '<p>'. __('This allows you to add attachments and images into your Help Notes.', 'role-based-help-notes') ;
+
+            $position = array( 'edge' => 'left', 'align' => 'center', 'my' => 'left middle', 'at' => 'right bottom-10' );
+
+            self::print_js( 'rbhn-add-media-button-pointer', '#insert-media-button', array( 
+                'content' => $pointer_content,
+                'position' => $position,
+            ) );
+
+        }         
     }
 }
 
@@ -114,3 +125,4 @@ if ( !class_exists( "RBHN_Pointers" ) )
 if ( class_exists( "RBHN_Pointers" ) ) {
 	$RBHN_Pointers = new RBHN_Pointers( );
 }
+
