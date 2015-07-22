@@ -354,7 +354,7 @@ class RBHN_Capabilities {
             
             if ( 'upload_files' == $cap ) {
                 
-               // echo var_dump($caps); // echo capabilityies to the screen for debuging
+               //echo var_dump($caps); // echo capabilityies to the screen for debuging
                 
                 $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );               ;
 		$active_roles = $role_based_help_notes->help_notes_role( );

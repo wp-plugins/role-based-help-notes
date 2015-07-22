@@ -199,8 +199,8 @@ class RBHN_Role_Based_Help_Notes {
             if ( $contents_page_id ) {
                 
                 global $pagenow, $post;
-                
-                if( ( $pagenow == 'post.php' ) || ( $pagenow == 'edit.php' )  ) {
+
+                if( ( (  $pagenow == 'post.php' ) || ( $pagenow == 'edit.php' ) ) && ( in_array( get_post_type(), $this->active_help_notes()) ) ) {
 
                     if ( isset( $_GET['post_type'] ) ) {
                         $post_type = $_GET['post_type'] ;

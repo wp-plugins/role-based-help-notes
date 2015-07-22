@@ -63,22 +63,23 @@ if ( !class_exists( "RBHN_Pointers" ) )
                 // at first assume we don't want to show pointers
                 $do_add_script = false;
 
-                // check contents-button for pointer requirement
-                if ( ! in_array( 'rbhn-contents-button-pointer', $seen_it ) ) {
-                        // flip the flag enabling pointer scripts and styles to be added later
-                        $do_add_script = true;
-                        
-                        // hook to output pointer script
-                        add_action( 'admin_print_footer_scripts', array( $this, 'pointer_rbhn_content_button_footer_script' ) );
-                }
                 
-                // check add-media-button for pointer requirement
-                if ( ! in_array( 'rbhn-add-media-button-pointer', $seen_it ) ) {
-                        // flip the flag enabling pointer scripts and styles to be added later
-                        $do_add_script = true;
+                // Only show one point at a time
+                if ( ! in_array( 'rbhn-contents-button-pointer', $seen_it ) ) {
+                    // if contents-button for pointer requirement
+
+                    $do_add_script = true;
+
+                    // hook to output pointer script
+                    add_action( 'admin_print_footer_scripts', array( $this, 'pointer_rbhn_content_button_footer_script' ) );
                         
-                        // hook to output pointer script
-                        add_action( 'admin_print_footer_scripts', array( $this, 'pointer_rbhn_add_media_footer_script' ) );
+                } elseif ( ! in_array( 'rbhn-add-media-button-pointer', $seen_it ) ) {
+                    // if add-media-button for pointer requirement
+                    
+                    $do_add_script = true;
+
+                    // hook to output pointer script
+                    add_action( 'admin_print_footer_scripts', array( $this, 'pointer_rbhn_add_media_footer_script' ) );
                 }
                 
                 if ( $do_add_script ) {
@@ -95,7 +96,8 @@ if ( !class_exists( "RBHN_Pointers" ) )
             $pointer_content = '<h3>' . __('Front of site Content Page', 'role-based-help-notes') . '.</h3>'; 
             $pointer_content .= '<p>'. __('This provides a quick link to the front of site contents page.  Useful when dealing with lots of Help Notes.', 'role-based-help-notes') ;
 
-            $position = array( 'edge' => 'left', 'align' => 'center', 'my' => 'left middle', 'at' => 'right bottom-10' );
+            $position = array( 'edge' => 'top', 'align' => 'left', 'my' => 'left top', 'at' => 'left bottom' );
+            
 
             self::print_js( 'rbhn-contents-button-pointer', '#contents-button1', array( 
                 'content' => $pointer_content,
@@ -107,7 +109,7 @@ if ( !class_exists( "RBHN_Pointers" ) )
         // content_button pointer has its own function responsible for putting appropriate JavaScript into footer
         function pointer_rbhn_add_media_footer_script() {
 
-            $pointer_content = '<h3>' . __('Upload Media', 'role-based-help-notes') . '.</h3>'; 
+            $pointer_content = '<h3>' . __('Add Media', 'role-based-help-notes') . '.</h3>'; 
             $pointer_content .= '<p>'. __('This allows you to add attachments and images into your Help Notes.', 'role-based-help-notes') ;
 
             $position = array( 'edge' => 'left', 'align' => 'center', 'my' => 'left middle', 'at' => 'right bottom-10' );

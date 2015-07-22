@@ -24,27 +24,28 @@ class RBHN_TAX {
 							'taxonomy' => 'topics', 
 							'page_title' => 'New Topics', 
 							'menu_title' => 'Topics',
-							'manage_capability' => 'manage_categories',
+							//'hierarchical' => true,
+                                                        'manage_capability' => 'manage_categories',
 							'labels' => array( 
-												'name' => _x( 'Topics', 'taxonomy plural name', 'role-based-help-notes-text-domain' ),
-												'singular_name' => _x( 'Topic', 'taxonomy singular name', 'role-based-help-notes-text-domain' ),
-												'search_items' =>  __( 'Search Topics', 'role-based-help-notes-text-domain' ),
-												'all_items' => __( 'All Topics', 'role-based-help-notes-text-domain' ),
-												'parent_item' => __( 'Parent Topic', 'role-based-help-notes-text-domain' ),
-												'parent_item_colon' => __( 'Parent Topic:', 'role-based-help-notes-text-domain' ),
-												'edit_item' => __( 'Edit Topic', 'role-based-help-notes-text-domain' ),
-												'update_item' => __( 'Update Topic', 'role-based-help-notes-text-domain' ),
-												'add_new_item' => __( 'Add New Topic', 'role-based-help-notes-text-domain' ),
-												'new_item_name' => __( 'New Topic Name', 'role-based-help-notes-text-domain' ),
-												'menu_name' => _x( 'Topics', 'taxonomy menu name', 'role-based-help-notes-text-domain' ),
-											) 
+                                                                            'name' => _x( 'Topics', 'taxonomy plural name', 'role-based-help-notes-text-domain' ),
+                                                                            'singular_name' => _x( 'Topic', 'taxonomy singular name', 'role-based-help-notes-text-domain' ),
+                                                                            'search_items' =>  __( 'Search Topics', 'role-based-help-notes-text-domain' ),
+                                                                            'all_items' => __( 'All Topics', 'role-based-help-notes-text-domain' ),
+                                                                            'parent_item' => __( 'Parent Topic', 'role-based-help-notes-text-domain' ),
+                                                                            'parent_item_colon' => __( 'Parent Topic:', 'role-based-help-notes-text-domain' ),
+                                                                            'edit_item' => __( 'Edit Topic', 'role-based-help-notes-text-domain' ),
+                                                                            'update_item' => __( 'Update Topic', 'role-based-help-notes-text-domain' ),
+                                                                            'add_new_item' => __( 'Add New Topic', 'role-based-help-notes-text-domain' ),
+                                                                            'new_item_name' => __( 'New Topic Name', 'role-based-help-notes-text-domain' ),
+                                                                            'menu_name' => _x( 'Topics', 'taxonomy menu name', 'role-based-help-notes-text-domain' ),
+                                                                        ) 
 							);
 							
 		$this->args     = wp_parse_args( $args, $defaults );
-							
+                
 		//Add custom taxonomy to Role Based Help Notes
 		//hook into the init action and call create_book_taxonomies when it fires
-		add_action( 'init', array( $this, 'create_hierarchical_taxonomy' ), 0 );
+		add_action( 'init', array( $this, 'create_hierarchical_taxonomy' ) );
 		
 		add_action( 'restrict_manage_posts', array( $this, 'restrict_posttype_by_taxonomy' ) );
 
@@ -58,14 +59,19 @@ class RBHN_TAX {
 		register_taxonomy(	$this->args['taxonomy'], 
 							array( $this->args['post_type'] ), 
 							apply_filters( 'rbhn_taxonomy_args', array(
-																		'hierarchical' => true,
-																		'labels' => $this->args['labels'],
-																		'show_ui' => true,
-																		'show_in_nav_menus' => false,
-																		'show_admin_column' => true,
-																		'query_var' => true,
-																		'rewrite' => array( 'slug' => $this->args['taxonomy'] ),
-																		)
+                                                                                                    'hierarchical' => true,
+                                                                                                    'labels' => $this->args['labels'],
+                                                                                                    'show_ui' => true,
+                                                                                                    'show_in_nav_menus' => false,
+                                                                                                    'show_admin_column' => true,
+                                                                                                    'query_var' => true,
+                                                                                                    'rewrite' => array( 'slug' => $this->args['taxonomy'] ),
+                                                                                                    'capabilities' => array( 'manage_terms' => $this->args['manage_capability'],
+                                                                                                                             'edit_terms' => $this->args['manage_capability'],
+                                                                                                                             'delete_terms' => $this->args['manage_capability'],
+                                                                                                                             'assign_terms' => 'edit_' . $this->args['post_type'] . 's',
+                                                                                                                            ),
+                                                                                                    )
 										)
 						);
 	}
@@ -108,6 +114,7 @@ class RBHN_TAX {
 
 
 // Configure the Taxonomy
+/*
 $args = array(
                         'post_type' => 'h_administrator', 
                         'taxonomy' => 'h_tax_topics', 
@@ -127,7 +134,7 @@ $args = array(
                                                                 'menu_name' => _x( 'Topics', 'taxonomy menu name', 'role-based-help-notes-text-domain' ),
                                                         ) 
                         );
-
+*/
 $post_types_array       = array_filter( ( array ) get_option( 'rbhn_post_types' ) );
 $role_based_help_notes  = RBHN_Role_Based_Help_Notes::get_instance( );
 
