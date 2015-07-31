@@ -38,5 +38,3 @@ function rbhn_register_widgets( ) {
 	
 	
 }
-
-?>

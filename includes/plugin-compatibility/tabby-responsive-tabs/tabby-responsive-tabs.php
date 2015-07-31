@@ -37,6 +37,3 @@ function rbhn_tabby_contents_page_role_final_listing( $value  ) {
     $content = do_shortcode( $value . '[tabbyending]' );
     return $content ;
 }
-
-
-?>

@@ -79,8 +79,8 @@ class RBHN_Email_Users_Settings {
             unset($new_settings['rbhn_plugin_extension']);
             $plugin_extension_array = array();
             $plugin_extension_array['rbhn_plugin_extension'] = $plugin_extension_tab;		
-            $new_settings = array_merge ( (array)$new_settings, (array)$plugin_extension_array );		
-            return 	$new_settings;
+            $final_settings = array_merge ( (array)$new_settings, (array)$plugin_extension_array );		
+            return $final_settings;
     }
 
 
@@ -126,7 +126,7 @@ class RBHN_Email_Users_Settings {
         $new_roles = get_option( $option_name );
 
         // set the capabilities
-        foreach ( $roles as $role_key=>$_rolename ) {
+        foreach ( array_keys( $roles ) as $role_key ) {
             if ( in_array( $role_key, $new_roles ) ) {
                 $role = get_role( $role_key );
                 $role->add_cap( 'email_user_groups' );
@@ -196,26 +196,25 @@ class RBHN_Email_Users_Settings_Additional_Methods {
                                                             
 			foreach( $roles as $role_key=>$role_name )
 			{
-                        $role = get_role( $role_key );
+                            $role = get_role( $role_key );
+                            $id = sanitize_key( $role_key );
 
-				$id = sanitize_key( $role_key );
-				$value = ( array ) get_option( $option['name'] );
+                            // Render the output  
+                            ?> 
+                            <li><label>
+                            <input type='checkbox'  
+                                    id="<?php echo esc_html( "exclude_enabled_{$id}" ) ; ?>" 
+                                    name="<?php echo esc_html( $option['name'] ); ?>[]"
+                                    value="<?php echo esc_attr( $role_key )	; ?>"<?php checked( $role->has_cap( 'email_user_groups' ) ) ;?>
 
-				// Render the output  
-				?> 
-				<li><label>
-				<input type='checkbox'  
-					id="<?php echo esc_html( "exclude_enabled_{$id}" ) ; ?>" 
-					name="<?php echo esc_html( $option['name'] ); ?>[]"
-                                        value="<?php echo esc_attr( $role_key )	; ?>"<?php checked( $role->has_cap( 'email_user_groups' ) ) ;?>
-
-				>
-				<?php echo esc_html( $role_name ) . " <br/>"; ?>	
-				</label></li>
-				<?php 
+                            >
+                            <?php echo esc_html( $role_name ) . " <br/>"; ?>	
+                            </label></li>
+                            <?php 
 			}?></ul><?php 
-			if ( ! empty( $option['desc'] ) )
-				echo ' <p class="description">' . $option['desc'] . '</p>';		
+			if ( ! empty( $option['desc'] ) ) {
+				echo ' <p class="description">' . $option['desc'] . '</p>';
+                        }
 		}
 	
 }
@@ -255,7 +254,7 @@ class RBHN_EMAIL_GROUPS {
     public function exclude_role_from_user( $editable_roles ) {        
 
         // drop out if not on the group emails page.
-         if	( ! is_admin() || ! ( isset( $_GET['page'] ) && ( $_GET['page'] == 'mailusers-send-to-group-page' ) ) )  {
+         if ( ! is_admin() || ! ( isset( $_GET['page'] ) && ( $_GET['page'] == 'mailusers-send-to-group-page' ) ) )  {
              return $editable_roles;
          }	
          
@@ -295,11 +294,12 @@ class RBHN_EMAIL_GROUPS {
                 if ( is_array( $role->capabilities ) ) {
 
                     /* Loop through the current users role's and there capabilities to find roles with the 'email_user_groups' capabiltiy set. */
-                    foreach ( $role->capabilities as $cap => $grant )
+                    foreach ( $role->capabilities as $cap => $grant ) {
                         if ( ( $cap == 'email_user_groups' ) && $grant ) {
                              $roles_with_cap_email_user_groups[] = $key;
                              break;
                         }
+                    }
                 }
             }
             
@@ -366,6 +366,3 @@ class RBHN_EMAIL_GROUPS {
  */
  
 RBHN_EMAIL_GROUPS::get_instance();
-
-		
-?>

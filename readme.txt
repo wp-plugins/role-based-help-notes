@@ -2,7 +2,7 @@
 Contributors: justinticktock
 Tags: multisite, roles, user, help, notes, cms, documents, groups, teams, collaboration, BuddyPress, intranet
 Requires at least: 3.5
-Tested up to: 4.2.1
+Tested up to: 4.2.3
 Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -31,11 +31,12 @@ Extensions:
 If you select the options for extending functionality through other plugins the following are available for ease of installing..
 
 Admin side Plugins..
-
+* [Role Includer]( https://wordpress.org/plugins/role-includer/ ) simple interface to handle multiple roles with users.  If you wish to hide/mask-out a particular role from "staff" ( such as "Administrator" ) so that staff cannot allocate the higher access level then you can exclude higher roles by using the ["Role Excluder"]( https://justinandco.com/plugins/downloads/role-excluder/) plugin.
 * [User Switching]( https://wordpress.org/plugins/user-switching/) great tool for admins to switch to test any users access/capability.
 * [Simple Page Ordering]( https://wordpress.org/plugins/simple-page-ordering/) for easing re-ordering of Help Notes.
 * [post_type_switcher]( https://wordpress.org/plugins/post-type-switcher/) plugin by [John James Jacoby]( https://profiles.wordpress.org/johnjamesjacoby/) & [Matthew Gerring]( https://profiles.wordpress.org/beatpanda/), useful to change the role associated with a Help Note after it has been created.
 * [Email Users]( https://wordpress.org/plugins/email-users/ ) allows users within a Help Note group/role to email others.
+* [Post Type Switcher]( http://wordpress.org/plugins/post-type-switcher ) allows users with two or more roles to change the role assigned to a help note, useful if you created a Help Note under the wrong role.
 
 
 Front End Plugins..
@@ -43,10 +44,9 @@ Front End Plugins..
 * [Simple FootNotes]( https://wordpress.org/plugins/simple-footnotes/) by [Andrew Nacin]( https://profiles.wordpress.org/nacin/) to add a footnote shortcode [ref][/ref].
 * [Tabby Response Tabs]( https://wordpress.org/plugins/tabby-responsive-tabs/) by [cubecolour]( https://profiles.wordpress.org/numeeja/) to add a tabbed effect to you contents page.
 * [disable_comments]( https://wordpress.org/plugins/disable-comments/) by [solarissmoke]( https://profiles.wordpress.org/solarissmoke/) allows you to easily remove comments from 'Help Note' use.
-* [Post type archive in menu]( https://wordpress.org/plugins/post-type-archive-in-menu/) plugin by [lpeharda]( https://profiles.wordpress.org/lpeharda/) to add 'Help Notes' archives to your menus.
+* [Menu Item Visibility Control]( https://wordpress.org/plugins/menu-items-visibility-control/) plugin by [shazdeh]( https://profiles.wordpress.org/shazdeh/) to add/hide 'Help Notes' to your menus.
 
-[Plugin site]( https://justinandco.com/plugins/role-based-help-notes/).  	
-[GitHub page]( https://github.com/justinticktock/role-based-help-notes ).
+[Plugin site]( https://justinandco.com/plugins/role-based-help-notes/).  
 
 == Installation ==
 

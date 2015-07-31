@@ -35,23 +35,23 @@ class RBHN_Email_Users_Widget extends WP_Widget {
             // drop out if not a single Help Note page or Help Hote Archive page.
             // or the General Help Note Type
             // or the group email functionality isn't enabled via the capabilties and the email-users plugin
-            $show_widget_help_notes = $role_based_help_notes->active_help_notes();
             $exclude_help_notes = array('h_general');
-            $show_widget_help_notes = array_diff($show_widget_help_notes, $exclude_help_notes);
+            $show_widget_help_notes = array_diff( $role_based_help_notes->active_help_notes( ), $exclude_help_notes );
 
-             if ( ! in_array( get_post_type(),  $show_widget_help_notes ) || is_archive()  )
+             if ( ! in_array( get_post_type( ),  $show_widget_help_notes ) || is_archive( ) ) {
                  return; 
+             }
 
-            $post_type = get_post_type();
+            $post_type = get_post_type( );
             $help_note_object = get_post_type_object( $post_type );
             $help_note_name = $help_note_object->labels->menu_name;
 
 
             // Find the users of the role based on the post type in use
-            $post_type = get_post_type();
             $help_note_role = $role_based_help_notes->help_notes_role( $post_type );
             
             /* only continue if the role has group email enabled */
+            global $wp_roles;
             if ( ! isset( $wp_roles ) ) {
                     $wp_roles = new WP_Roles();
             }   
@@ -66,11 +66,12 @@ class RBHN_Email_Users_Widget extends WP_Widget {
                     if ( is_array( $role->capabilities ) ) {
 
                         /* Loop through the role's capabilities to find roles with the 'email_user_groups' capabiltiy set. */
-                        foreach ( $role->capabilities as $cap => $grant )
+                        foreach ( $role->capabilities as $cap => $grant ) {
                             if ( ( $cap == 'email_user_groups' ) && $grant ) {
                                  $roles_with_cap_email_user_groups[] = $key;
                                  break 2;
                             }
+                        }
                     }                    
                 }
             }   
@@ -132,5 +133,3 @@ class RBHN_Email_Users_Widget extends WP_Widget {
 	}
 
 } // class RBHN_Email_Users_Widget
-
-?>

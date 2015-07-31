@@ -94,7 +94,7 @@ class RBHN_TAX {
                                                                 )
                                                             );
                                 }
-			};
+			}
 		}
 
 
@@ -186,7 +186,3 @@ if ( ! empty( $post_types_array ) ) {
                 }
         }
 }
-
-
-
-?>

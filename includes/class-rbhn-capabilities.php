@@ -33,13 +33,15 @@ class RBHN_Capabilities {
 	}
         
         public function rbhn_load_media() {
-            if ( ! current_user_can( 'edit_posts' ) )
+            if ( ! current_user_can( 'edit_posts' ) ) {
                 wp_die( __( 'You do not have permission to access the Media Library.', 'role-based-help-notes' ) );
+            }
         }
 
         public function rbhn_admin_menu() {
-            if ( ! current_user_can( 'edit_posts' ) )
+            if ( ! current_user_can( 'edit_posts' ) ) {
                 remove_menu_page( 'upload.php' );
+            }
         }
           
 	/**
@@ -61,9 +63,9 @@ class RBHN_Capabilities {
 				foreach( $help_note_post_types_array as $active_role=>$active_posttype ) {
 
 
-					if ( in_array( $active_role, $caps_options ) )
+					if ( in_array( $active_role, $caps_options ) ) {
 						break ; // if capabilities are already created drop out
-
+                                        }
 					// add active role to option to stop re-creating its capabilities
 					$caps_options[] = $active_role;
 					update_option( 'rbhn_caps_created', $caps_options ); 
@@ -167,9 +169,6 @@ class RBHN_Capabilities {
 	 */
 	public static function rbhn_clean_inactive_capabilties( ) {
 
-		// collect an array of all inactive Help Note Post Types an remove capabilities
-		$post_types_array = get_option( 'rbhn_post_types' );  
-		
 		$role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
 		$active_roles = $role_based_help_notes->help_notes_role( );
 
@@ -204,15 +203,13 @@ class RBHN_Capabilities {
 	 */
 	public function rbhn_map_meta_cap( $caps, $cap, $user_id, $args ) {
 		
-		// option collection to collect active Help Note roles.  
-		$post_types_array = ( array ) get_option( 'rbhn_post_types' );	// collect available roles
-		$post_types_array = array_filter( $post_types_array );		// remove empty entries
+		$post_types_array = array_filter( ( array ) get_option( 'rbhn_post_types' ) );		// remove empty entries
 
 		if ( ! empty( $post_types_array ) ) {
 		
 			$help_note_found = false;
 	
-			foreach( $post_types_array as $active_role=>$active_posttype ) {
+			foreach( $post_types_array as $active_posttype ) {
 	
 				$active_posttype_values =  array_values ( ( array ) $active_posttype );
 				$capability_type = array_shift( $active_posttype_values );
@@ -235,31 +232,38 @@ class RBHN_Capabilities {
 			/* If editing a help note, assign the required capability. */
 			if ( $help_note_found && ( "edit_{$capability_type}" == $cap ) ) {
 
-				if( $user_id == $post->post_author )
+				if( $user_id == $post->post_author ) {
 					$caps[] = $post_type->cap->edit_posts;
-				else
+                                }
+				else {
 					$caps[] = $post_type->cap->edit_others_posts;	
+                                }
 
 			}
 					
 			/* If deleting a help note, assign the required capability. */
 			elseif( $help_note_found && ( "delete_{$capability_type}" == $cap ) ) {
 				
-				if( isset( $post->post_author ) && $user_id == $post->post_author  && isset( $post_type->cap->delete_posts ) )
+				if( isset( $post->post_author ) && $user_id == $post->post_author  && isset( $post_type->cap->delete_posts ) ) {
 					$caps[] = $post_type->cap->delete_posts;
-				elseif ( isset( $post_type->cap->delete_others_posts ) )
-					$caps[] = $post_type->cap->delete_others_posts;		
+                                }
+				elseif ( isset( $post_type->cap->delete_others_posts ) ) {
+					$caps[] = $post_type->cap->delete_others_posts;	
+                                }
 			}
 
 			/* If reading a private help note, assign the required capability. */
 			elseif( $help_note_found && ( "read_{$capability_type}" == $cap ) ) {
 
-				if( 'private' != $post->post_status )
+				if( 'private' != $post->post_status ) {
 					$caps[] = 'read';
-				elseif ( $user_id == $post->post_author )
+                                }
+				elseif ( $user_id == $post->post_author ) {
 					$caps[] = 'read';
-				else
+                                }
+				else {
 					$caps[] = $post_type->cap->read_private_posts;
+                                }
 			}
 		}
 		
@@ -294,8 +298,7 @@ class RBHN_Capabilities {
                     $parent = get_post( $post->post_parent );
 
                     $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
-                    $active_roles = $role_based_help_notes->help_notes_role( );
-                    $active_roles = array_filter( ( array ) $active_roles );  // Filter out any empty entries, if non active.	
+                    $active_roles = array_filter( ( array ) $role_based_help_notes->help_notes_role( ) );  // Filter out any empty entries, if non active.	
 
                     if ( empty( $active_roles ) ) {
                         return $caps;
@@ -354,11 +357,8 @@ class RBHN_Capabilities {
             
             if ( 'upload_files' == $cap ) {
                 
-               //echo var_dump($caps); // echo capabilityies to the screen for debuging
-                
-                $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );               ;
-		$active_roles = $role_based_help_notes->help_notes_role( );
-		$active_roles = array_filter( ( array ) $active_roles );  // Filter out any empty entries, if non active.	
+                $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
+		$active_roles = array_filter( ( array ) $role_based_help_notes->help_notes_role( ) );  // Filter out any empty entries, if non active.	
 
 		if ( empty( $active_roles ) ) {
                     return $caps;
@@ -449,9 +449,6 @@ class RBHN_Capabilities {
 
             $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
             $active_help_note_ids = $role_based_help_notes->help_note_ids( );
-            $post_parent__in = implode(',', array_map( 'absint', $active_help_note_ids ) );
-            
-            global $wpdb;   
 
             /* join 2 queries together 
              * 1) one for finding the attchments that the current user has authored.
@@ -468,4 +465,3 @@ class RBHN_Capabilities {
 }
 
 new RBHN_Capabilities( );
-

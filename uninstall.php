@@ -1,8 +1,9 @@
 <?php
 
 //if uninstall not called from WordPress exit
-if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
+if ( !defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit ( );
+}
 	
 if ( is_multisite( ) ) {
     $blogs = wp_list_pluck( wp_get_sites(), 'blog_id' );
@@ -65,9 +66,9 @@ function rbhn_clean_database( ) {
 		delete_option( 'rbhn_deactivate_tabby-responsive' );
 		
 		// user specific database entries
-		delete_user_meta( get_current_user_id( ), 'rbhn_prompt_timeout', $meta_value );
-		delete_user_meta( get_current_user_id( ), 'rbhn_start_date', $meta_value );
-		delete_user_meta( get_current_user_id( ), 'rbhn_hide_notice', $meta_value );
+		delete_user_meta( get_current_user_id( ), 'rbhn_prompt_timeout' );
+		delete_user_meta( get_current_user_id( ), 'rbhn_start_date' );
+		delete_user_meta( get_current_user_id( ), 'rbhn_hide_notice' );
 
 }
 		
@@ -76,14 +77,13 @@ function rbhn_capabilities_clean_up( ) {
 
     global $wp_roles;
  
-    if ( ! isset( $wp_roles ) )
+    if ( ! isset( $wp_roles ) ) {
         $wp_roles = new WP_Roles( );
-            
+    }        
     $roles = $wp_roles->get_names( );
 
     // loop through the roles to create the capability list that needs to be cleaned out
-	foreach( $roles as $role_key=>$role_name ) 
-    {
+	foreach( array_keys( $roles ) as $role_key ) {
         rbhn_role_caps_uninstall( $role_key );
     }
 }

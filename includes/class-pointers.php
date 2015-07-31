@@ -21,9 +21,9 @@ if ( !class_exists( "RBHN_Pointers" ) )
 	 * @param array  $args Arguments to be passed to the pointer JS (see wp-pointer.js).
 	 */
 	private static function print_js( $pointer_id, $selector, $args ) {
-		if ( empty( $pointer_id ) || empty( $selector ) || empty( $args ) || empty( $args['content'] ) )
+		if ( empty( $pointer_id ) || empty( $selector ) || empty( $args ) || empty( $args['content'] ) ) {
 			return;
-
+                }
 		?>
 		<script type="text/javascript">
 		(function($){
@@ -127,4 +127,3 @@ if ( !class_exists( "RBHN_Pointers" ) )
 if ( class_exists( "RBHN_Pointers" ) ) {
 	$RBHN_Pointers = new RBHN_Pointers( );
 }
-

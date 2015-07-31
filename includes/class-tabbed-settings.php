@@ -3,7 +3,7 @@
  * Plugin tabbed settings option class for WordPress themes.
  *
  * @package   class-tabbed-settings.php
- * @version   1.1.9
+ * @version   1.2.0
  * @author    Justin Fletcher <justin@justinandco.com>
  * @copyright Copyright ( c ) 2014, Justin Fletcher
  * @license   http://opensource.org/licenses/gpl-2.0.php GPL v2 or later
@@ -108,10 +108,9 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 		 */	 
 		public function current_user_can_do_all( $capabilities ) {
 			
-			$capabilities = ( array ) $capabilities;  // convert to array
 			$user_has_all_caps = true;
 			
-			foreach ( $capabilities as $capability ) {
+			foreach ( ( array ) $capabilities as $capability ) {
 				if ( ! current_user_can( $capability ) ) {
 					$user_has_all_caps = false;
 					break;
@@ -283,8 +282,9 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 			$option   = $args['option'];
 			$value = get_option( $option['name'] );
 			?><label><input id="setting-<?php echo esc_html( $option['name'] ); ?>" name="<?php echo esc_html( $option['name'] ); ?>" type="checkbox" value="1" <?php checked( '1', $value ); ?> /> <?php echo $option['label']; ?></label><?php
-			if ( ! empty( $option['desc'] ) )
-			echo ' <p class="description">' .  $option['desc'] . '</p>';
+			if ( ! empty( $option['desc'] ) ) {
+                            echo ' <p class="description">' .  $option['desc'] . '</p>';
+                        }
 		}
 
 		/**
@@ -321,8 +321,9 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 
 			
 			<?php
-			if ( ! empty( $option['desc'] ) )
-				echo ' <p class="description">' . $option['desc'] . '</p>';		
+			if ( ! empty( $option['desc'] ) ) {
+				echo ' <p class="description">' . $option['desc'] . '</p>';
+                        }
 		}
 	
 		/**
@@ -348,18 +349,23 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 
 			if ( ! file_exists( $plugin_main_file ) ) {
 				echo esc_html__( 'Enable to prompt installation and force active.', 'role-based-help-notes' ) . ' ( ';
-				if ( $value ) echo '  <a href="' . add_query_arg( 'page', TGM_Plugin_Activation::$instance->menu, admin_url( 'themes.php' ) ) . '">' .  _x( 'Install', 'Install the Plugin', 'role-based-help-notes' ) . " </a> | " ;
+				if ( $value ) {
+                                    echo '  <a href="' . add_query_arg( 'page', TGM_Plugin_Activation::$instance->menu, admin_url( 'themes.php' ) ) . '">' .  _x( 'Install', 'Install the Plugin', 'role-based-help-notes' ) . " </a> | " ;
+                                }
 				
 			} elseif ( is_plugin_active( $option['slug'] . '/' . $option['slug'] . '.php' ) &&  ! is_plugin_active_for_network( $option['slug'] . '/' . $option['slug'] . '.php' ) ) {
 				echo esc_html__( 'Force Active', 'role-based-help-notes' ) . ' ( ';
-				if ( ! $value ) echo '<a href="plugins.php?s=' . esc_html( $option['label'] )	 . '">' .  _x( 'Deactivate', 'deactivate the plugin', 'role-based-help-notes' ) . "</a> | " ;	
+				if ( ! $value ) { 
+                                    echo '<a href="plugins.php?s=' . esc_html( $option['label'] )	 . '">' .  _x( 'Deactivate', 'deactivate the plugin', 'role-based-help-notes' ) . "</a> | " ;	
+                                }
 			} else {
 				echo esc_html__( 'Force Active', 'role-based-help-notes' ) . ' ( ';
 			}
 			echo ' <a href="http://wordpress.org/plugins/' . esc_html( $option['slug'] ) . '">' .  esc_html__( "wordpress.org", 'role-based-help-notes' ) . " </a> )" ;		
 			?></label><?php
-			if ( ! empty( $option['desc'] ) )
+			if ( ! empty( $option['desc'] ) ) {
 				echo ' <p class="description">' .  $option['desc']  . '</p>';
+                        }
 		}	
 
 		/**
@@ -369,19 +375,19 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 		 * @return void
 		 */
 		public function field_textarea_option( array $args  ) {
-
-			$option   = $args['option'];		
+	
 			$defaults = array( 	
 						'columns' => "40",
 						'rows' => "3",
 						);
 				
-			$option = wp_parse_args( $option, $defaults );
+			$option = wp_parse_args( $args['option'], $defaults );
 			$value = get_option( $option['name'] );
 			?><textarea id="setting-<?php echo esc_html( $option['name'] ); ?>" cols=<?php echo $option['columns']; ?> rows=<?php echo $option['rows']; ?> name="<?php echo esc_html( $option['name'] ); ?>" ><?php echo esc_textarea( $value ); ?></textarea><?php
 
-			if ( ! empty( $option['desc'] ) )
+			if ( ! empty( $option['desc'] ) ) {
 				echo ' <p class="description">' . $option['desc'] . '</p>';
+                        }
 		}
 
 		/**
@@ -393,13 +399,17 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 		public function field_select_option( array $args  ) {
 			$option   = $args['option'];
 			$value = get_option( $option['name'] );
-			?><select id="setting-<?php echo esc_html( $option['name'] ); ?>" class="regular-text" name="<?php echo esc_html( $option['name'] ); ?>"><?php
-				foreach( $option['options'] as $key => $name )
+			?>
+                        <select id="setting-<?php echo esc_html( $option['name'] ); ?>" class="regular-text" name="<?php echo esc_html( $option['name'] ); ?>"><?php
+				foreach( $option['options'] as $key => $name ) {
 					echo '<option value="' . esc_attr( $key ) . '" ' . selected( $value, $key, false ) . '>' . esc_html( $name ) . '</option>';
-			?></select><?php
-
-			if ( ! empty( $option['desc'] ) )
+                                }
+			?>
+                        </select>
+                        <?php
+			if ( ! empty( $option['desc'] ) ) {
 				echo ' <p class="description">' . esc_html( $option['desc'] ) . '</p>';
+                        }
 		}
 		
 		/**
@@ -443,8 +453,9 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 				</label></li>
 				<?php 
 			}?></ul><?php 
-			if ( ! empty( $option['desc'] ) )
-				echo ' <p class="description">' . $option['desc'] . '</p>';		
+			if ( ! empty( $option['desc'] ) ) {
+				echo ' <p class="description">' . $option['desc'] . '</p>';
+                        }
 		}
 		
 
@@ -459,8 +470,9 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 			$value = get_option( $option['name'] );
 			?><input id="setting-<?php echo esc_html( $option['name'] ); ?>" class="regular-text" type="text" name="<?php echo esc_html( $option['name'] ); ?>" value="<?php esc_attr_e( $value ); ?>" /><?php
 
-			if ( ! empty( $option['desc'] ) )
+			if ( ! empty( $option['desc'] ) ) {
 				echo ' <p class="description">' . $option['desc'] . '</p>';
+                        }
 		}
 		
 		/**
@@ -549,5 +561,3 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 		}
 	}
 }
-
-?>
