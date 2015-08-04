@@ -28,20 +28,20 @@ class RBHN_Role_Based_Help_Notes {
 	// Refers to a single instance of this class.
     private static $instance = null;
 	
-    public	 $plugin_full_path;
-	public   $plugin_file = 'role-based-help-notes/role-based-help-notes.php';
+    public  $plugin_full_path;
+    public  $plugin_file = 'role-based-help-notes/role-based-help-notes.php';
 	
 	// Settings details
-    public	 $menu = 'notes-settings';
+    public  $menu = 'notes-settings';
 	
 	// menu item
-    public	 $menu_page = 'notes.php';
+    public  $menu_page = 'notes.php';
 	
 	// Settings Admin Menu Title
-    public	 $menu_title = 'Help Notes';
+    public  $menu_title = 'Help Notes';
 	
 	// Settings Page Title
-    public	 $page_title = 'Help Notes';
+    public  $page_title = 'Help Notes';
 	
 	/**
 	 * __construct function.
@@ -85,9 +85,28 @@ class RBHN_Role_Based_Help_Notes {
             
             /* Add a button to the edit page to short cut to the front of site contents */
             add_action( 'admin_print_footer_scripts', array( $this, 'rbhn_add_contents_page_button' ) );
+            
+            /* Add java to the Help Notes Content Page to scroll to the relavanet section */   
+            add_action( 'print_footer_scripts', array( $this, 'rbhn_jump_to_contents_section' ) );
+            
+            
+            add_action( 'wp_enqueue_scripts', array( $this, 'rbhn_name_scripts' ) );
+            
 
 	}
-	
+        
+        function rbhn_name_scripts() {
+                // enqueue the java script to jump to the correct HelpNotes section on the contents page
+                wp_enqueue_script(
+                        'contentspage', 
+                        plugins_url( 'js/contentspage.js' , __FILE__ ),
+                        array('jquery'), 
+                        $this->plugin_get_version( ), 
+                        true);
+        }
+
+
+
 	/**
 	 * Defines constants used by the plugin.
 	 *
@@ -97,7 +116,7 @@ class RBHN_Role_Based_Help_Notes {
 
             // Define constants
             define( 'HELP_MYPLUGINNAME_PATH', plugin_dir_path(__FILE__) );
-            define( 'HELP_PLUGIN_DIR', trailingslashit( plugin_dir_path( HELP_MYPLUGINNAME_PATH ) ) );
+            define( 'HELP_PLUGIN_DIR', plugin_dir_path( HELP_MYPLUGINNAME_PATH ) );
 
             // admin prompt constants
             define( 'PROMPT_DELAY_IN_DAYS', 30);
@@ -190,9 +209,14 @@ class RBHN_Role_Based_Help_Notes {
 	}	
         
         
-        
+	/**
+         * use java to inject the new "Content Page" button alongside the edit post button. 
+	 *
+	 * @return void
+	 */  
+                 
         function rbhn_add_contents_page_button( ) {
-            
+
             $contents_page_id = get_option( 'rbhn_contents_page' ) ;
 
             if ( $contents_page_id ) {
@@ -207,7 +231,9 @@ class RBHN_Role_Based_Help_Notes {
                         $post_type = get_post_type( $post );
                     }
 
-                    $contents_page_link = get_permalink( $contents_page_id ) ;
+                    // the $post_type on its own as a value will cause a 404 error as its already used by WordPress
+                    // so I'm adding a temp postfix "MyPostType"
+                    $contents_page_link = add_query_arg( 'post_type', "MyPostType{$post_type}", get_permalink( $contents_page_id ) );
                     $contents_page_button_text = __( 'Contents Page', 'role-based-help-notes-text-domain' ) ;
 
                     ?>
@@ -215,14 +241,65 @@ class RBHN_Role_Based_Help_Notes {
                             var contents_link = <?php echo json_encode($contents_page_link) ?>;
                             var contents_page_button_text = <?php echo json_encode($contents_page_button_text) ?>;
                             var post_type = <?php echo json_encode($post_type) ?>;
-                            jQuery('.wrap h2 .add-new-h2').after('<a href= "' + contents_link + '#' + post_type + '" id="contents-button1" class="add-new-h2">' + contents_page_button_text + '</a>');
+                           // jQuery('.wrap h2 .add-new-h2').after('<a href= "' + contents_link + '#' + post_type + '" id="contents-button1" class="add-new-h2">' + contents_page_button_text + '</a>');
+                           //jQuery('.wrap h2 .add-new-h2').after('<a href= "' + contents_link + '#' + post_type + '" id="contents-button1" class="add-new-h2">' + contents_page_button_text + '</a>');
+                           // jQuery('.wrap h2 .add-new-h2').after('<a href= "' + contents_link  + '" id="contents-button1" class="add-new-h2">' + contents_page_button_text + '</a>');
+                           
+                           // keep the html goto #dev also add post_type as an argument for java to pick up on the Help Notes Contents page.
+                            jQuery('.wrap h2 .add-new-h2').after('<a href= "' + contents_link  + '#' + post_type + '" id="contents-button1" class="add-new-h2">' + contents_page_button_text + '</a>');
+                           
                         </script>
                     <?php
                 }
             }
         }
 
+	/**
+         * Add java content to the Contents Page to scroll to the reference help note. 
+         * this is necessary if tabby or other such java rendering has been used
+	 *
+	 *
+	 * @return void
+	 */  
+             
+        function rbhn_jump_to_contents_section( ) {
+            
+            if ( ! is_user_logged_in( ) ) {
+                return;
+            }   
+            
+            $contents_page_id = get_option( 'rbhn_contents_page' ) ;
+ 
+            if ( ! is_page( $contents_page_id ) ) {
+                return;
+            }
 
+            global $pagenow, $post;
+
+            if ( isset( $_GET['post_type'] ) ) {
+                $post_type = $_GET['post_type'] ;
+                
+                
+        
+                
+                
+                //ref http://stackoverflow.com/questions/3432656/scroll-to-a-div-using-jquery
+                ?>
+                    <script type="text/javascript">
+                        <![CDATA[
+                        function scrollToElement(ele) {
+                            $(window).scrollTop(ele.offset().top).scrollLeft(ele.offset().left);
+                        }
+                        var clean_post_type = <?php echo str_replace( 'MyPostType', '', json_encode($post_type) ) ?>;
+                        scrollToElement($('#' + clean_post_type));
+                        $('div#' + clean_post_type)[0].scrollIntoView(true);
+                        ]]>
+                    </script>
+                <?php                
+            } 
+
+        }
+        
 	/**
 	 * Initialise the plugin by handling upgrades and loading the text domain. 
 	 *
@@ -744,7 +821,7 @@ class RBHN_Role_Based_Help_Notes {
 					$rbhn_section_content =   '<p><li>' . _x( 'None yet', 'No help notes are currently available for this role.', 'role-based-help-notes-text-domain' )   . '</li></p></br>';
 				}
                                 
-                                $rbhn_contents_page_role_listing_title = apply_filters( 'rbhn_contents_page_role_listing_title', '<h2 id= ' . $posttype_selected . '>' . $posttype_Name . '</h2>', $posttype_Name );
+                                $rbhn_contents_page_role_listing_title = apply_filters( 'rbhn_contents_page_role_listing_title', '<div id= ' . $posttype_selected . '><h2>' . $posttype_Name . '</h2>', $posttype_Name );
                                 $rbhn_contents_page_role_listing = apply_filters( 'rbhn_contents_page_role_listing', $rbhn_section_content );
                                 $rbhn_content = $rbhn_content . $rbhn_contents_page_role_listing_title . $rbhn_contents_page_role_listing;
                                             
