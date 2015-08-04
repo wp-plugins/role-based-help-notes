@@ -7,7 +7,7 @@ function GetURLParameter( sParam ) {
 			return sParameterName[1].replace('MyPostType', '');
 		}
 	}
-};
+}
 
 function goto_section( ){
 	
@@ -16,12 +16,12 @@ function goto_section( ){
 	jQuery('html, body').animate({
 		scrollTop: jQuery(post_type).offset().top -50
 	}, 'slow');
-};
+}
 
 jQuery(document).ready(function(){
 
 	var post_type = GetURLParameter( 'post_type' );
-	console.log("post_type...=" + post_type); 
+	//console.log("post_type...=" + post_type); 
 	goto_section( post_type );
 
-});
+})
