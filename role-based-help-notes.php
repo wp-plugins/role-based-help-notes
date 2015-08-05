@@ -144,17 +144,15 @@ class RBHN_Role_Based_Help_Notes {
 
         if ( ! get_option( 'rbhn_tabbed_contents_page' ) ) {
             
-            //Add java content to the Contents Page to scroll to the reference help note. 
-            //this is necessary if tabby or other such java rendering has been used
+            //Add java content to the Contents Page to scroll elegantly  to the reference help note. 
 
             $contents_page_id = get_option( 'rbhn_contents_page' ) ;
 
             if ( is_page( $contents_page_id ) ) {
-                // enqueue the java script to jump to the correct HelpNotes section on the contents page
                 wp_enqueue_script(
                         'contentspage', 
                         plugins_url( 'js/contents-page-scroll-to-section.js' , __FILE__ ),
-                        array('jquery'),    // tabby-responsive-tabs doesn't like this set
+                        array('jquery'),
                         $this->plugin_get_version( ), 
                         true);
             }
@@ -750,9 +748,10 @@ class RBHN_Role_Based_Help_Notes {
                     $active_role_notes = $this->active_help_notes( );
 
                     $rbhn_content = apply_filters( 'rbhn_contents_page_before_listing', '' );
-
+                    
+                    $section_counter = 0;
                     foreach( $active_role_notes as $posttype_selected ) {
-
+                            
                             $posttype = get_post_type_object( $posttype_selected );			
                             $posttype_Name = $posttype->labels->name; 
 
@@ -787,6 +786,8 @@ class RBHN_Role_Based_Help_Notes {
                             $rbhn_contents_page_role_listing = apply_filters( 'rbhn_contents_page_role_listing', $rbhn_section_content );
                             $rbhn_content = $rbhn_content . $rbhn_contents_page_role_listing_title . $rbhn_contents_page_role_listing;
 
+                            $section_counter = ++$section_counter;
+                            do_action( 'rbhn_create_content_section', $posttype_selected, $posttype_Name, $section_counter );
                     }
 
                     $content = $content . apply_filters( 'rbhn_contents_page_role_final_listing', $rbhn_content );
