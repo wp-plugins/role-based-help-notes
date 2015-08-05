@@ -45,14 +45,13 @@ class RBHN_Contents_Page_Navigation_Widget extends WP_Widget {
 
             echo $args['before_widget'];
             if ( empty ( $instance['title'] ) ) {
-                $instance['title'] = esc_html__("Group Email", 'role-based-help-notes' );
+                $instance['title'] = esc_html__("Contents Page", 'role-based-help-notes' );
             }            
 
             // the $post_type on its own as a value will cause a 404 error as its already used by WordPress
             // so I'm adding a temp postfix "MyPostType"
             $contents_page_link = add_query_arg( 'post_type', "MyPostType{$post_type}", get_permalink( $contents_page_id ) );
-            $contents_page_button_text = __( $help_note_name . ' Help Note Contents', 'role-based-help-notes-text-domain' ) ;
-            //echo '<button class="readmorebtn" onclick="' . esc_attr('window.location="' . add_query_arg( array( 'helpnotetype' => $post_type ), admin_url( 'admin.php?page=mailusers-send-to-group-page' )) . '"') . '">' . sprintf( __( 'Email the %1$s group.', 'role-based-help-notes-text-domain' ), '<strong>' . $help_note_name .'</strong>') . '</button></BR></BR>';
+            $contents_page_button_text = sprintf( __( '%1$s Contents Page', 'role-based-help-notes-text-domain' ), '<strong>' . $help_note_name .'</strong>') ;
             echo $args['before_title'] . $instance['title'] . "" . $args['after_title'];
             echo   '<button id="contents-button1" class="readmorebtn" onclick="' . esc_attr('window.location="' . $contents_page_link . '"') . '">' . $contents_page_button_text . '</button></BR></BR>';
             echo $args['after_widget'];
