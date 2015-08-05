@@ -20,6 +20,6 @@ jQuery(document).ready(function(){
 	console.log("tabby_tab_id...=" + tabby_tab_id); 
 	jQuery( "#tablist1-" + tabby_tab_id).click();	 
 		 
-    }, 500);
+    }, 1000);
 
 })

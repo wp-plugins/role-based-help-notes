@@ -644,7 +644,7 @@ class RBHN_Role_Based_Help_Notes {
                                             // notes always created for correct permalink settings when saved even when a role is not given to the user saving the permalinks, 
                                             // capabilities will be used to limit access to Notes on the front end.
 
-                                            if	( ( ! is_admin() && ( $this->help_notes_current_user_has_role( $active_role ) ) ) ||                                                // register help notes if on the front of site only if user has capability
+                                            if	( ( ! is_admin() && ( $this->help_notes_current_user_has_role( $active_role ) ) ) ||                                                    // register help notes if on the front of site only if user has capability
                                                     ( isset( $_GET['page'] ) && ( ( $_GET['page'] == 'notes-settings' ) || ( $_GET['page'] == $this->menu_page ) ) )   ||               // register if on the Help Notes Menu page or in Help Notes settings
                                                     ( isset( $_GET['post_type'] ) && in_array( $_GET['post_type'], $this->enabled_help_notes() ) )  ||                                  // register if on a Help Note page in admin				
                                                     ( $pagenow == 'export.php' ) ||                                                                                                     // register if on the tools..export page in admin		
@@ -652,7 +652,8 @@ class RBHN_Role_Based_Help_Notes {
                                                     ( $pagenow == 'post.php' ) ||                                                                                                       // register if on the admin page for editing help notes
                                                     ( $pagenow == 'edit.php' ) ||                                                                                                       // register if on the admin page for editing help notes
                                                     ( $pagenow == 'upload.php' ) ||                                                                                                     // register if on the admin page listing the help notes with quick edit functionality
-                                                    ( defined( 'DOING_AJAX' ) && DOING_AJAX )                                                                                           // if doing Ajax is true when uploading through drag-and-drop
+                                                    ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ||                                                                                        // if doing Ajax is true when uploading through drag-and-drop
+                                                    ( $pagenow == 'media-upload.php' )                                                                                                  // if uploading through other plugins 'media_upload_tabs'
                                                     ) { 		
 
                                                     call_user_func_array( array( $this, 'help_register_posttype' ), array( $active_role, $roles[$active_role], $active_posttype ) ); 
@@ -743,6 +744,12 @@ class RBHN_Role_Based_Help_Notes {
      */	
     public function rbhn_add_post_content( $content ) {
 
+            if ( ! is_user_logged_in() ) {
+                
+                $content = $content . '<h2>' . __('Please loging to see the Help Note Contents!', 'role-based-help-notes-text-domain' ) .'</h2>';
+                return $content;
+                
+            }
             if ( ( get_option( 'rbhn_contents_page' ) != "0" ) && is_page( get_option( 'rbhn_contents_page' ) ) && is_main_query( ) ) {
 
                     $active_role_notes = $this->active_help_notes( );

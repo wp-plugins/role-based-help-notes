@@ -15,16 +15,32 @@
  */
 
 if (  get_option( 'rbhn_tabbed_contents_page' ) ) {
-	//add_filter( 'rbhn_contents_page_before_listing', 'rbhn_tabby_contents_page_before_listing', 10 );
-	add_filter( 'rbhn_contents_page_role_listing_title', 'rbhn_tabby_contents_page_role_listing_title', 10, 2 );
-	add_filter( 'rbhn_contents_page_role_listing', 'rbhn_tabby_contents_page_role_listing', 10 );
-	add_filter( 'rbhn_contents_page_role_final_listing', 'rbhn_tabby_contents_page_role_final_listing', 10 );
-        add_action( 'wp_enqueue_scripts', 'rbhn_tabby_contents_page_scripts');        
+    //add_filter( 'rbhn_contents_page_before_listing', 'rbhn_tabby_contents_page_before_listing', 10 );
+    add_filter( 'rbhn_contents_page_role_listing_title', 'rbhn_tabby_contents_page_role_listing_title', 10, 2 );
+    add_filter( 'rbhn_contents_page_role_listing', 'rbhn_tabby_contents_page_role_listing', 10 );
+    add_filter( 'rbhn_contents_page_role_final_listing', 'rbhn_tabby_contents_page_role_final_listing', 10 );
+    add_action( 'wp_enqueue_scripts', 'rbhn_tabby_contents_page_scripts');        
 
-        // add tabby_tab to URL
-        add_action( 'rbhn_create_content_section', 'rbhn_tabby_contents_section', 10, 3 );
+    // add tabby_tab to URL arguments
+    add_action( 'rbhn_create_content_section', 'rbhn_tabby_contents_section', 10, 3 );
+
         
-        
+}
+
+
+function rbhn_tabby_contents_page_role_listing_title( $value, $posttype_Name  ) {
+    $content = '[tabby title="' . $posttype_Name . '"]';
+    return $content ;
+}
+
+function rbhn_tabby_contents_page_role_listing( $value  ) {
+    $content = $value;
+    return $content ;
+}
+
+function rbhn_tabby_contents_page_role_final_listing( $value  ) {
+    $content = do_shortcode( $value . '[tabbyending]' );
+    return $content ;
 }
 
 function rbhn_tabby_contents_section( $posttype_selected, $posttype_Name, $section_counter ) {
@@ -48,30 +64,17 @@ function rbhn_tabby_contents_section( $posttype_selected, $posttype_Name, $secti
     
 }
 
-function rbhn_tabby_contents_page_role_listing_title( $value, $posttype_Name  ) {
-    //$content = $rbhn_content . '<h2>' . $posttype_Name . '</h2>';
-    $content = '[tabby title="' . $posttype_Name . '"]';
-    return $content ;
-}
-
-function rbhn_tabby_contents_page_role_listing( $value  ) {
-    $content = $value;
-    return $content ;
-}
-
-function rbhn_tabby_contents_page_role_final_listing( $value  ) {
-    //$content = do_shortcode( $value . '[tabbyending]' );
-    $content = do_shortcode( $value . '[tabbyending]' );
-    return $content ;
-}
-
 function rbhn_tabby_contents_page_scripts() {
-    //Add java content to the Contents Page to jump to the reference help note. 
 
+    //Add java content to the Contents Page to jump to the reference help note tab. 
     $contents_page_id = get_option( 'rbhn_contents_page' ) ;
 
     if ( is_page( $contents_page_id ) ) {
-        
+
+        if ( ! isset( $_GET['post_type'] ) ) {
+                        return ;
+        }
+
         $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
         // enqueue the java script to jump to the correct HelpNotes section on the contents page
         wp_enqueue_script(
