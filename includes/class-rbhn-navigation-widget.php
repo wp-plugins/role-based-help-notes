@@ -51,7 +51,7 @@ class RBHN_Contents_Page_Navigation_Widget extends WP_Widget {
             // the $post_type on its own as a value will cause a 404 error as its already used by WordPress
             // so I'm adding a temp postfix "MyPostType"
             $contents_page_link = add_query_arg( 'post_type', "MyPostType{$post_type}", get_permalink( $contents_page_id ) );
-            $contents_page_button_text = sprintf( __( '%1$s Contents Page', 'role-based-help-notes-text-domain' ), '<strong>' . $help_note_name .'</strong>') ;
+            $contents_page_button_text = sprintf( __( '%1$s Notes', 'role-based-help-notes-text-domain' ), '<strong>' . $help_note_name .'</strong>') ;
             echo $args['before_title'] . $instance['title'] . "" . $args['after_title'];
             echo   '<button id="contents-button1" class="readmorebtn" onclick="' . esc_attr('window.location="' . $contents_page_link . '"') . '">' . $contents_page_button_text . '</button></BR></BR>';
             echo $args['after_widget'];

@@ -130,7 +130,7 @@ class RBHN_Role_Based_Help_Notes {
         require_once( HELP_MYPLUGINNAME_PATH . 'includes/widgets.php' );
 
         // Load the Help Pointers on the admin side
-        require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-pointers.php' );
+        require_once( HELP_MYPLUGINNAME_PATH . 'includes/class-rbhn-pointers.php' );
 
 
     }
