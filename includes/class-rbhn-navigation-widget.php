@@ -45,7 +45,7 @@ class RBHN_Contents_Page_Navigation_Widget extends WP_Widget {
 
             echo $args['before_widget'];
             if ( empty ( $instance['title'] ) ) {
-                $instance['title'] = esc_html__("Contents Page", 'role-based-help-notes' );
+                $instance['title'] = esc_html__("Contents", 'role-based-help-notes' );
             }            
 
             // the $post_type on its own as a value will cause a 404 error as its already used by WordPress

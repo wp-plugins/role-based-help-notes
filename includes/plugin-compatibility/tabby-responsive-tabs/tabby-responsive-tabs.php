@@ -52,8 +52,9 @@ function rbhn_tabby_contents_section( $posttype_selected, $posttype_Name, $secti
 
     if ( isset( $_GET['post_type'] ) ) {
         $query_post_type = $_GET['post_type'];
-        $query_post_type = str_replace('MyPostType', '',  $query_post_type  ) ;
-        //$query_post_type = $_GET['post_type'] ;
+        $query_post_type = str_replace('MyPostType', '',  $query_post_type  ) ;  // a prefix was necessary here as the post_type on its own in the 
+                                                                                 // URL arguments is a valid query parameter that WordPress would 
+                                                                                 // interpret and use causing a 404 error
         if ( $posttype_selected == $query_post_type ) {
             // add tabby section id to the url arguments for the js goto to pickup
             remove_query_arg( 'tabby_tab' );
