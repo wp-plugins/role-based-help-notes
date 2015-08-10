@@ -51,5 +51,3 @@ function rbhn_email_users_remove_metabox( $current_screen ) {
     }
 }
 add_action( 'current_screen', 'rbhn_email_users_remove_metabox' );
-
-?>

@@ -1,6 +1,5 @@
 <?php
 
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -35,12 +34,12 @@ class RBHN_Tag_Cloud_Widget extends WP_Widget {
 
        // drop out if not a single Help Note page or Help Hote Archive page.
        // or the General Help Note Type
-       $show_widget_help_notes = $role_based_help_notes->active_help_notes( );
        $exclude_help_notes = array( 'h_general' );
-       $show_widget_help_notes = array_diff( $show_widget_help_notes, $exclude_help_notes );
+       $show_widget_help_notes = array_diff( $role_based_help_notes->active_help_notes( ), $exclude_help_notes );
        
-        if ( ! in_array( get_post_type( ),  $show_widget_help_notes ) )
+        if ( ! in_array( get_post_type( ),  $show_widget_help_notes ) ) {
             return; 
+        }
 
 		$post_type = get_post_type( );
 		$help_note_object = get_post_type_object( $post_type );
@@ -53,8 +52,9 @@ class RBHN_Tag_Cloud_Widget extends WP_Widget {
 		}
 		
 		echo $args['before_widget'];
-		if ( ! empty( $title ) )
+		if ( ! empty( $title ) ) {
 			echo $args['before_title'] . $title . $args['after_title'];
+                }
  /*       
 		if ( $title )
 			echo $before_title . $title . $after_title;

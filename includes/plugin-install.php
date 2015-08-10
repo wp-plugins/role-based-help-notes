@@ -11,8 +11,13 @@ add_action( 'tgmpa_register', 'rbhn_tgmpa_register' );
 
 function rbhn_tgmpa_register( ) {
 
-	$plugins = RBHN_Settings::get_instance( )->selected_plugins( 'rbhn_plugin_extension' );
-	
+	$plugin_extensions = RBHN_Settings::get_instance( )->selected_plugins( 'rbhn_plugin_extension' );
+        $plugins = array_filter( $plugin_extensions ); // Remove any empty array items.
+        
+        if ( ! $plugins ) {
+            return;
+        }
+        
 	$config = array(
 			'default_path' => '',                      // Default absolute path to pre-packaged plugins.
 			'menu'         => 'tgmpa-install-plugins', // Menu slug.
@@ -47,7 +52,3 @@ function rbhn_tgmpa_register( ) {
 	tgmpa( $plugins, $config );
 
 }
-
-
-
-?>

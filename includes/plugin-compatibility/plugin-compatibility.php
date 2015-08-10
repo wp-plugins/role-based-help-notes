@@ -26,8 +26,9 @@ if ( !function_exists( 'help_notes_available' ) ) {
 		// check if no help notes are selected.
 		$help_note_post_types =  get_option( 'rbhn_post_types' );
 
-		if ( ! array_filter( ( array ) $help_note_post_types ) && ! get_option( 'rbhn_general_enabled' ) )
+		if ( ! array_filter( ( array ) $help_note_post_types ) && ! get_option( 'rbhn_general_enabled' ) ) {
 			return false;
+                }
 
 		// if the current user has the role of an active writeable Help Note.
 		if ( array_filter( ( array ) $help_note_post_types ) ) {	
@@ -57,9 +58,10 @@ if ( !function_exists( 'help_notes_available' ) ) {
                 }
 		
 
-		$helpnote_post_types = array_filter( $helpnote_post_types );
-		if ( ! empty( $helpnote_post_types ) ) {
-			return $helpnote_post_types;
+		$final_helpnote_post_types = array_filter( $helpnote_post_types );
+                
+		if ( ! empty( $final_helpnote_post_types ) ) { 
+			return $final_helpnote_post_types;
 		} else {
 			return false;
 		}
@@ -153,7 +155,7 @@ if ( is_plugin_active( 'email-users/email-users.php' ) || is_plugin_active_for_n
     if ( isset( $option ) && !empty( $option ) ) {
 
         /* Load the email users widget file. */
-        require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/email-users/class-email-users-widget.php' );
+        require_once( HELP_MYPLUGINNAME_PATH . 'includes/plugin-compatibility/email-users/class-rbhn-email-users-widget.php' );
         
         /* Register the widget. */
         register_widget( 'rbhn_email_users_widget' );
@@ -161,5 +163,3 @@ if ( is_plugin_active( 'email-users/email-users.php' ) || is_plugin_active_for_n
     }
 
 }
-
-?>
