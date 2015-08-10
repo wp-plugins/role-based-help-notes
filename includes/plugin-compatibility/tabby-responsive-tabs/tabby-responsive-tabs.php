@@ -81,7 +81,7 @@ function rbhn_tabby_contents_page_scripts() {
         wp_enqueue_script(
                 'contents-page-goto-tabby-tab', 
                 plugins_url( 'js/contents-page-goto-tabby-tab.js' , __FILE__ ),
-                array('jquery'), 
+                array('jquery', 'tabby'), 
                 $role_based_help_notes->plugin_get_version( ), 
                 true
                 );

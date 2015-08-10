@@ -84,7 +84,7 @@ class RBHN_Role_Based_Help_Notes {
         add_filter( 'pre_get_posts', array( $this, 'rbhn_custom_post_author_archive' ) );
 
         /* Add a button to the edit page to short cut to the front of site contents */
-        add_action( 'admin_print_footer_scripts', array( $this, 'rbhn_add_contents_page_button' ) );
+        add_action( 'admin_print_footer_scripts', array( $this, 'add_contents_page_button' ) );
 
         /* Add java to the Help Notes Content Page to scroll to the relavanet section */   
         add_action( 'wp_enqueue_scripts', array( $this, 'scripts' ) );
@@ -203,60 +203,81 @@ class RBHN_Role_Based_Help_Notes {
 
                     echo "<h1>" . $welcome_post->post_title . "</h1>";
 
-                    // Add short cut link to site front end contents page
-                    if ( get_option( 'rbhn_contents_page' ) != 0 ) {
-                            echo '<div class="wrap"><h2><a href="' . get_permalink( $contents_page_id ) . '" id="contents-button1" class="add-new-h2" id="contents-button">' . __( 'Contents Page', 'role-based-help-notes-text-domain' ) . '</a></h2></div></BR></BR>';         
-                    }
+                    $this->add_contents_page_button();
 
                     echo $welcome_content;
 
             } else {
                     echo "<h1>" . __( 'Help Notes', 'role-based-help-notes-text-domain' ) . "</h1>";
 
+                    $this->add_contents_page_button();
             }
 
     }	
 
 
     /**
-     * use java to inject the new "Content Page" button alongside the edit post button. 
+     * contents page button generation 
      *
-     * @return void
-     */  
+     * @return content generation of the Content Page button
+     */
 
-    function rbhn_add_contents_page_button( ) {
+    function add_contents_page_button( ) {
+        
+        // drop out if no contents page is configured or not on the admin side
+        if ( ! is_admin( ) || get_option( 'rbhn_contents_page' ) == 0 ) {
+            return;
+        }    
+        
+        // Add contents page button to the Welcome page on the backend.
+        if( isset( $_GET['page'] ) && ( $_GET['page'] == $this->menu_page ) ) {
+            $contents_page_id = get_option( 'rbhn_contents_page' );
+            echo '<div class="wrap"><h2><a href="' . get_permalink( $contents_page_id ) . '" id="contents-button1" class="add-new-h2" id="contents-button">' . __( 'Contents Page', 'role-based-help-notes-text-domain' ) . '</a></h2></div></BR></BR>';         
+            return;
+        }        
 
-        $contents_page_id = get_option( 'rbhn_contents_page' ) ;
+        global $pagenow;
+        // Add contents page button to the Help Notes admin side of one Help NOte type
+        if( ( $pagenow == 'post.php' ) || ( $pagenow == 'edit.php' ) ) {
 
-        if ( $contents_page_id ) {
-
-            global $pagenow, $post;
-
-            if( ( (  $pagenow == 'post.php' ) || ( $pagenow == 'edit.php' ) ) && ( in_array( get_post_type(), $this->active_help_notes()) ) ) {
-
-                if ( isset( $_GET['post_type'] ) ) {
-                    $post_type = $_GET['post_type'] ;
-                } else {
-                    $post_type = get_post_type( $post );
-                }
-
-                // the $post_type on its own as a value will cause a 404 error as its already used by WordPress
-                // so I'm adding a temp postfix "MyPostType"
-                $contents_page_link = add_query_arg( 'post_type', "MyPostType{$post_type}", get_permalink( $contents_page_id ) );
-                $contents_page_button_text = __( 'Contents Page', 'role-based-help-notes-text-domain' ) ;
-
-                ?>
-                    <script type="text/javascript">
-                        var contents_link = <?php echo json_encode( $contents_page_link ) ?>;
-                        var contents_page_button_text = <?php echo json_encode( $contents_page_button_text ) ?>;
-                        var post_type = <?php echo json_encode( $post_type ) ?>;
-
-                       // keep the html goto #dev also add post_type as an argument for java to pick up on the Help Notes Contents page.
-                        jQuery('.wrap h2 .add-new-h2').after('<a href= "' + contents_link  + '#' + post_type + '" id="contents-button1" class="add-new-h2">' + contents_page_button_text + '</a>');
-
-                    </script>
-                <?php
+            if ( isset( $_GET['post_type'] ) ) {
+                $post_type = $_GET['post_type'] ;
+            } else {
+                global $post;
+                $post_type = get_post_type( $post );
             }
+
+            if ( ! ( in_array( $post_type, $this->active_help_notes( ) ) ) ) {
+                return;
+            }
+
+            // the $post_type on its own as a value will cause a 404 error as its already used by WordPress
+            // so I'm adding a temp postfix "MyPostType"
+            $contents_page_id = get_option( 'rbhn_contents_page' );
+            $contents_page_link = add_query_arg( 'post_type', "MyPostType{$post_type}", get_permalink( $contents_page_id ) );
+            $contents_page_button_text = __( 'Contents Page', 'role-based-help-notes-text-domain' ) ;
+
+            ?>
+                <script type="text/javascript">
+                    (function($) {                
+
+                    function newdiv() {
+                        windowsize = $(window).width();
+                        if (windowsize < 500) {
+                              //console.log(windowsize);
+                              return '<div></div>';
+                          } ; 
+                          return '';
+                    }
+
+                    var contents_link = <?php echo json_encode( $contents_page_link ) ?>;
+                    var contents_page_button_text = <?php echo json_encode( $contents_page_button_text ) ?> ;
+                    var post_type = <?php echo json_encode( $post_type ) ?>;
+                   // keep the html goto #dev also add post_type as an argument for java to pick up on the Help Notes Contents page.
+                    $('.wrap h2 .add-new-h2').after( newdiv() + '<a href= "' + contents_link  + '#' + post_type + '" id="contents-button1" class="add-new-h2">' + contents_page_button_text + '</a>');
+                    })(jQuery);
+                </script>
+            <?php
         }
     }
 
@@ -671,6 +692,7 @@ class RBHN_Role_Based_Help_Notes {
                             ( $pagenow == 'admin.php' ) ||                                                                                                      // register if on the admin page which us used for importing via the wordpress importer extension
                             ( $pagenow == 'post.php' ) ||                                                                                                       // register if on the admin page for editing help notes
                             ( $pagenow == 'edit.php' ) ||                                                                                                       // register if on the admin page for editing help notes
+                            ( $pagenow == 'revision.php' ) ||                                                                                                   // register if on the revisions page for help notes
                             ( $pagenow == 'upload.php' ) ||                                                                                                     // register if on the admin page listing the help notes with quick edit functionality
                             ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ||                                                                                        // if doing Ajax is true when uploading through drag-and-drop
                             ( $pagenow == 'media-upload.php' )                                                                                                  // if uploading through other plugins 'media_upload_tabs'

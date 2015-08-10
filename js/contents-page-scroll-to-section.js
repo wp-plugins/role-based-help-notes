@@ -1,4 +1,6 @@
-function GetURLParameter( sParam ) {
+(function($) {
+    
+    function GetURLParameter( sParam ) {
 	var sPageURL = window.location.search.substring( 1 );
 	var sURLVariables = sPageURL.split( '&' );
 	for ( var i = 0; i < sURLVariables.length; i++ ) {
@@ -7,21 +9,23 @@ function GetURLParameter( sParam ) {
 			return sParameterName[1].replace('MyPostType', '');
 		}
 	}
-}
+    }
 
-function goto_section( ){
-	
-	var post_type = "#" + arguments[0];
+    function goto_section( ){
 
-	jQuery('html, body').animate({
-		scrollTop: jQuery(post_type).offset().top -50
-	}, 'slow');
-}
+            var post_type = "#" + arguments[0];
 
-jQuery(document).ready(function(){
+            $('html, body').animate({
+                    scrollTop: $(post_type).offset().top -50
+            }, 'slow');
+    }
 
-	var post_type = GetURLParameter( 'post_type' );
-	//console.log("post_type...=" + post_type); 
-	goto_section( post_type );
+    $(window).load(function(){
 
-})
+            var post_type = GetURLParameter( 'post_type' );
+            goto_section( post_type );
+
+    })
+
+
+})(jQuery);
