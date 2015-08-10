@@ -27,7 +27,6 @@
 
             var $currentActive = $('html, body').find('.responsive-tabs__heading--active');  
             var newActivePos = ($currentActive.offset().top) - 15;
-            console.log(" newActivePos.. .= " + newActivePos);
 
             $('html, body').animate({ scrollTop: newActivePos }, 200)
 

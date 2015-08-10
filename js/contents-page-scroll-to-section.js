@@ -20,7 +20,8 @@
             }, 'slow');
     }
 
-    $(window).load(function(){
+    //$(window).load(function(){
+    $(document).ready(function(){
 
             var post_type = GetURLParameter( 'post_type' );
             goto_section( post_type );

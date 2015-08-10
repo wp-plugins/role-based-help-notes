@@ -264,7 +264,6 @@ class RBHN_Role_Based_Help_Notes {
                     function newdiv() {
                         windowsize = $(window).width();
                         if (windowsize < 500) {
-                              //console.log(windowsize);
                               return '<div></div>';
                           } ; 
                           return '';
@@ -274,7 +273,13 @@ class RBHN_Role_Based_Help_Notes {
                     var contents_page_button_text = <?php echo json_encode( $contents_page_button_text ) ?> ;
                     var post_type = <?php echo json_encode( $post_type ) ?>;
                    // keep the html goto #dev also add post_type as an argument for java to pick up on the Help Notes Contents page.
+                    
+                    // pre 4.3
                     $('.wrap h2 .add-new-h2').after( newdiv() + '<a href= "' + contents_link  + '#' + post_type + '" id="contents-button1" class="add-new-h2">' + contents_page_button_text + '</a>');
+                    
+                    //4.3 support...
+                    $('.wrap h1 .page-title-action').after( newdiv() + '<a href= "' + contents_link  + '#' + post_type + '" id="contents-button1" class="add-new-h2">' + contents_page_button_text + '</a>');
+                    
                     })(jQuery);
                 </script>
             <?php
