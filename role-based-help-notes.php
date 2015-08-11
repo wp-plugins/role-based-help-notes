@@ -795,7 +795,7 @@ class RBHN_Role_Based_Help_Notes {
         if ( ( get_option( 'rbhn_contents_page' ) != "0" ) && is_page( get_option( 'rbhn_contents_page' ) ) && is_main_query( ) ) {
             
             if ( ! is_user_logged_in() ) {
-                $content = $content . '<h2>' . __('Please loging to see the Help Note Contents!', 'role-based-help-notes-text-domain' ) .'</h2>';
+                $content = $content . '<h2>' . __('Please login to see the Help Note Contents!', 'role-based-help-notes-text-domain' ) .'</h2>';
                 return $content;
             }
             $active_role_notes = $this->active_help_notes( );
