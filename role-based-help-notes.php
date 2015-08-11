@@ -601,7 +601,7 @@ class RBHN_Role_Based_Help_Notes {
 
     }
 
-/**
+    /**
      * Returns the array of active Help Notes roles or if a post_type is provided the single role associated.
      *
      * @access public
