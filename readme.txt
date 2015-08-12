@@ -3,7 +3,7 @@ Contributors: justinticktock
 Tags: multisite, roles, user, help, notes, cms, documents, groups, teams, collaboration, BuddyPress, intranet
 Requires at least: 3.5
 Tested up to: 4.3
-Stable tag: 1.5.1
+Stable tag: 1.5.1	
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,6 +31,7 @@ Extensions:
 If you select the options for extending functionality through other plugins the following are available for ease of installing..
 
 Admin side Plugins..
+
 * [Role Includer]( https://wordpress.org/plugins/role-includer/ ) simple interface to handle multiple roles with users.  If you wish to hide/mask-out a particular role from "staff" ( such as "Administrator" ) so that staff cannot allocate the higher access level then you can exclude higher roles by using the ["Role Excluder"]( https://justinandco.com/plugins/downloads/role-excluder/) plugin.
 * [User Switching]( https://wordpress.org/plugins/user-switching/) great tool for admins to switch to test any users access/capability.
 * [Simple Page Ordering]( https://wordpress.org/plugins/simple-page-ordering/) for easing re-ordering of Help Notes.
