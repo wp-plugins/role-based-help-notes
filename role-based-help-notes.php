@@ -563,22 +563,24 @@ class RBHN_Role_Based_Help_Notes {
      * @return array of active Help Notes post type IDs
      */	
     public function help_note_ids(  $help_notes = null  ){
-
+ 
         $active_help_note_post_types = $this->active_help_notes( );
 
         if ( $help_notes == null ) {
             $help_notes = $active_help_note_post_types;
         } else {
-            $help_notes = array_intersect( $active_help_note_post_types, $help_notes );
-        }   
+            $help_notes = $help_notes;
+        }
 
 
         $qry_args = array(
                         'post_type' => $help_notes,
                         'posts_per_page' => -1, // ALL posts use -1
                         );
-
+ 
         $help_note_posts = new WP_Query( $qry_args );
+
+
         wp_reset_postdata();
 
         $help_note_post_ids = wp_list_pluck( $help_note_posts->posts, 'ID' ); 
