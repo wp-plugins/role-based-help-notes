@@ -579,11 +579,9 @@ class RBHN_Role_Based_Help_Notes {
                         );
  
         $help_note_posts = new WP_Query( $qry_args );
-
-
+        $help_note_post_ids = wp_list_pluck( $help_note_posts->posts, 'ID' ); 
         wp_reset_postdata();
 
-        $help_note_post_ids = wp_list_pluck( $help_note_posts->posts, 'ID' ); 
         return $help_note_post_ids;                                                          
     }            
 

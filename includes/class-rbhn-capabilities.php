@@ -359,24 +359,24 @@ class RBHN_Capabilities {
         public function rbhn_upload_file_map_meta_cap( $caps, $cap, $user_id, $args ) {
             
             if ( 'upload_files' == $cap ) {
-                
+  
                 $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
-		$active_roles = array_filter( ( array ) $role_based_help_notes->help_notes_role( ) );  // Filter out any empty entries, if non active.	
+		$active_roles = array_filter( ( array ) $role_based_help_notes->active_help_notes( ) );  // Filter out any empty entries, if non active.	
 
 		if ( empty( $active_roles ) ) {
                     return $caps;
                 }
            
                 $caps = array( );
-                
+ 
                 foreach( $active_roles as $role ) {
-                    
                     if ( $role_based_help_notes->help_notes_current_user_has_role( $role ) ) {
                         $caps[] = 'upload_files_' . $role_based_help_notes->clean_post_type_name( $role ); 
                     }
                 } 
+                
             }
-    
+
             return $caps;
         }
         
@@ -389,85 +389,107 @@ class RBHN_Capabilities {
          **/
         public function rbhn_posts_where(  $where, $object  ){
 
-      
-            global $pagenow;
-            if( ( ! is_user_logged_in( ) ) || ! ( $object->post_type = 'attachment' ) || ( ! $pagenow == 'upload.php' ) ) {         
+            if( ! is_admin( ) ) {   
                 return $where;
             }
+            
+       //     if(  ( ! $object->query_vars['post_type'] = 'attachment' ) ) {         // or if not in the main loop
+       //         return $where;
+       //     }
+            
+            $currentScreen = get_current_screen();
 
+
+            if( ( ! $currentScreen->base === 'upload' )          // if not on the media library page
+                 || ( ! is_admin( ) )               // or if not on the admin side of the site
+            ) {   
+                return $where;
+            }
             
- 
-                          
-// start to exclude media where attached to helpnotes is user has upload_file cap.           
-//posts_where
-//$post_parent__not_in
-         
-    
-            /* drop out if the user has already permission to upload_files and see all media.
-             * 'publish_posts' is given to authors and above by WordPress so we are using this 
-             * as the cap to check against.  This is since with Help Notes acitive we have given all Help Note
-             * users the upload_files capaiblity we can't check against that.
-             *
-             * remove upload_files map_meta_cap hook so that 'upload_files' capabilty relates to the 
-             * user allocated caps before HelpNotes adds the cap to users.
-             */
+            // remove the 'posts_where' filter hook to stop infinite nested looping error
+            // as this method uses calls to the WP_Query which inturn would otherwise call 'rbhn_posts_where'
+            // in turn creating an infinite loop
+            remove_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );     
+            
+            $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
+            
+            // remove upload_files map_meta_cap hook so that 'upload_files' capabilty relates to the 
+            // user allocated caps before HelpNotes adds the cap to users.
             remove_filter( 'map_meta_cap', array( $this, 'rbhn_upload_file_map_meta_cap' ), 10, 4);
-            if ( current_user_can( 'upload_files' ) ) {
-            
+            $user_has_upload_files_wp_cap = current_user_can( 'upload_files' );
+            add_filter( 'map_meta_cap', array( $this, 'rbhn_upload_file_map_meta_cap' ), 10, 4); 
+
+            if ( $user_has_upload_files_wp_cap ) {
+
+
                 // limit the media by removing attachments to HelpNotes that the current user does not have access to
 
-                $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
                 $enabled_help_notes = $role_based_help_notes->enabled_help_notes();
                 $active_help_notes = $role_based_help_notes->active_help_notes();
+                
                 $help_notes_not_available_to_user = array_filter( array_diff( $enabled_help_notes, $active_help_notes ) ); // diff and remove empty elements.
           
                 // drop out if the user has access to all enabled Help Notes
                 if ( ! $help_notes_not_available_to_user ) {
                     return $where;
                 }
-                
-                
-                /* remove the posts_where filter hook to stop infinite nested looping error
-                 * while collecting the Help Notes post IDs
-                 */
-                remove_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );                  
-                $helpnote_parent_not_available = $role_based_help_notes->help_note_ids( $help_notes_not_available_to_user );
-                add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );
 
+                // collecting the Help Notes post IDs and while completing this
+                // remove the 'posts_where' filter hook to stop infinite nested looping error
+                             
+                $helpnote_parent_not_available = $role_based_help_notes->help_note_ids( $help_notes_not_available_to_user );
 
                 global $wpdb;
                 $post_parent__not_in = implode(',', array_map( 'absint', $helpnote_parent_not_available ) ); 
                 $where .= " AND ( $wpdb->posts.post_parent NOT IN ( $post_parent__not_in ) )";
-                return $where;
-		add_filter( 'map_meta_cap', array( $this, 'rbhn_upload_file_map_meta_cap' ), 10, 4); 
+
+            } 
+            
+            
+            //re-evaluate the current screen
+            $currentScreen = get_current_screen();
+            
+    
+            if (    current_user_can( 'upload_files' )      // otherwise now check in the current user has the 'upload_files' cap provdied by Help Notes via meta caps
+                    && $currentScreen->base === 'upload'               // current screen is the upload media screen
+               //     && $currentScreen->post_type === 'attachmentss'               // current screen is the upload media screen
+            ) {  
+      
+
+                
+  //               if( ! ( is_user_logged_in() && $object->post_type = 'attachment' && $pagenow == 'upload.php' ) ){
+   //                  return $where;
+   //        
+   //                   }
+       ;
+//if ( $object->post_type = 'attachment' ) {
+   
+               
+               
+
+//}                
+
+//die("I'm confused why this is string 'upload.php' (length=10) while its not supposed to be so." . var_dump($pagenow) . var_dump($object));  
+                // remove the 'posts_where' filter hook to stop infinite nested looping error
+                // while collecting the Help Notes post ID
+               // remove_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 ); 
+                $active_help_note_ids = $role_based_help_notes->help_note_ids( );
+                //add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );
+
+                $author = get_current_user_id();
+
+                /* limit to attachments that are uploaded by the current user (author) */
+                $where .= ' AND post_author = ' . $author;
+
+        ; 
+                $post_parent__in = implode(',', array_map( 'absint', $active_help_note_ids ) );
+                global $wpdb;     
+                $where .= " OR ( $wpdb->posts.post_parent IN ( $post_parent__in ) ) "; 
+                $where .= " AND post_type != 'revision'";       
             }
-            add_filter( 'map_meta_cap', array( $this, 'rbhn_upload_file_map_meta_cap' ), 10, 4);
 
-            
-            
-            
-            
-            /* remove the posts_where filter hook to stop infinite nested looping error
-             * while collecting the Help Notes post IDs
-             */
-            remove_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );    
-            $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
-            $active_help_note_ids = $role_based_help_notes->help_note_ids( );
-            add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );
-            
-            global $wpdb;       
-            
-            $author = get_current_user_id();
-
-            /* limit to attachments that are uploaded by the current user (author) */
-            $where .= ' AND post_author = ' . $author;
-
-            $post_parent__in = implode(',', array_map( 'absint', $active_help_note_ids ) );
-            $where .= " OR ( $wpdb->posts.post_parent IN ( $post_parent__in ) ) "; //AND (  $wpdb->post_type = 'attachment'  ) ";
-            $where .= " AND post_type != 'revision'";
-
-           // 'post_status' => 'inherit', // This implies attachment
-            
+            // re-hook the filter
+            //add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );
             return $where;
         }
 
@@ -481,16 +503,35 @@ class RBHN_Capabilities {
          **/
         public function rbhn_limit_current_user_attachments(  $query = array()  ){
 
-            /* drop out if the user has already permission to see all media.
-             * 'publish_posts' is given to authors and above by WordPress so we are using this 
-             * as the cap to check against.  This is since with Help Notes acitive we have given all Help Note
-             * users the upload_files capaiblity we can't check against that.
+            
+            
+            /* 
+             * 
+             * 
+             * 
+             * 
+             * This currently doesn't restrict media from the ajax media loader for users if they have the wordpress 'upload_files' cap
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
              */
-                        
-die( var_dump( $query));
-            if ( current_user_can( 'publish_posts' ) ) { 
-                return $query;
+            
+            
+            
+            
+            
+             /* drop out if the user has already permission to upload_files and see all media.
+             * remove upload_files map_meta_cap hook so that 'upload_files' capabilty relates to the 
+             * user allocated caps before HelpNotes adds the cap to users.
+             */
+            remove_filter( 'map_meta_cap', array( $this, 'rbhn_upload_file_map_meta_cap' ), 10, 4);
+            if ( current_user_can( 'upload_files' ) ) {
+               return $query;
             }
+            add_filter( 'map_meta_cap', array( $this, 'rbhn_upload_file_map_meta_cap' ), 10, 4); 
 
             $role_based_help_notes = RBHN_Role_Based_Help_Notes::get_instance( );
             $active_help_note_ids = $role_based_help_notes->help_note_ids( );
@@ -500,8 +541,8 @@ die( var_dump( $query));
              * 2) the second to find the attachments that are attached to helpnotes that the current user has access to
              */
             $user_id = get_current_user_id();
-            $current_user_attachments               = get_posts( array( 'post_type' => 'attachment', 'fields' => 'ids', 'author' => $user_id ) );
-            $attachments_with_parent_help_notes     = get_posts( array( 'post_type' => 'attachment', 'fields' => 'ids', 'post_parent__in' => $active_help_note_ids ) );
+            $current_user_attachments   = get_posts( array( 'post_type' => 'attachment', 'fields' => 'ids', 'author' => $user_id ) );
+            $attachments_with_parent_help_notes = get_posts( array( 'post_type' => 'attachment', 'fields' => 'ids', 'post_parent__in' => $active_help_note_ids ) );
             $show_attachments = array_merge( $attachments_with_parent_help_notes, $current_user_attachments );
             $query['post__in'] = $show_attachments;        
             wp_reset_postdata();
