@@ -455,41 +455,21 @@ class RBHN_Capabilities {
                //     && $currentScreen->post_type === 'attachmentss'               // current screen is the upload media screen
             ) {  
       
-
-                
-  //               if( ! ( is_user_logged_in() && $object->post_type = 'attachment' && $pagenow == 'upload.php' ) ){
-   //                  return $where;
-   //        
-   //                   }
-       ;
-//if ( $object->post_type = 'attachment' ) {
-   
-               
-               
-
-//}                
-
-//die("I'm confused why this is string 'upload.php' (length=10) while its not supposed to be so." . var_dump($pagenow) . var_dump($object));  
-                // remove the 'posts_where' filter hook to stop infinite nested looping error
-                // while collecting the Help Notes post ID
-               // remove_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 ); 
-                $active_help_note_ids = $role_based_help_notes->help_note_ids( );
-                //add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );
-
                 $author = get_current_user_id();
 
                 /* limit to attachments that are uploaded by the current user (author) */
                 $where .= ' AND post_author = ' . $author;
 
-        ; 
+                $active_help_note_ids = $role_based_help_notes->help_note_ids( );
                 $post_parent__in = implode(',', array_map( 'absint', $active_help_note_ids ) );
+                
                 global $wpdb;     
                 $where .= " OR ( $wpdb->posts.post_parent IN ( $post_parent__in ) ) "; 
                 $where .= " AND post_type != 'revision'";       
             }
 
             // re-hook the filter
-            //add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );
+            add_filter( 'posts_where', array( $this, 'rbhn_posts_where' ), 10, 2 );
             return $where;
         }
 
