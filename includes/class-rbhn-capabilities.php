@@ -392,16 +392,22 @@ class RBHN_Capabilities {
             if( ! is_admin( ) ) {   
                 return $where;
             }
-            
+    
        //     if(  ( ! $object->query_vars['post_type'] = 'attachment' ) ) {         // or if not in the main loop
        //         return $where;
        //     }
             
+            // this function has been seen not loaded on some sites
+            // 
+            if ( ! function_exists('get_current_screen') ) {
+                return $where;
+            }
+       
             $currentScreen = get_current_screen();
 
 
-            if( ( ! $currentScreen->base === 'upload' )          // if not on the media library page
-                 || ( ! is_admin( ) )               // or if not on the admin side of the site
+            if( ( ! $currentScreen->base === 'upload' )     // if not on the media library page
+                 || ( ! is_admin( ) )                       // or if not on the admin side of the site
             ) {   
                 return $where;
             }
@@ -446,15 +452,19 @@ class RBHN_Capabilities {
             } 
             
             
-            //re-evaluate the current screen
+            /* re-evaluate the current screen 
+             * this returns null for the  displayed media library in modal on the post edit screen
+             * hence the if statement will not execute instead the 'rbhn_limit_current_user_attachments' method 
+             * caters for this case.
+             */
+           
             $currentScreen = get_current_screen();
             
     
-            if (    current_user_can( 'upload_files' )      // otherwise now check in the current user has the 'upload_files' cap provdied by Help Notes via meta caps
-                    && $currentScreen->base === 'upload'               // current screen is the upload media screen
-               //     && $currentScreen->post_type === 'attachmentss'               // current screen is the upload media screen
+            if ( current_user_can( 'upload_files' )         // otherwise now check in the current user has the 'upload_files' cap provdied by Help Notes via meta caps
+                    && $currentScreen->base === 'upload'    // current screen is the upload media screen
             ) {  
-      
+
                 $author = get_current_user_id();
 
                 /* limit to attachments that are uploaded by the current user (author) */
@@ -483,27 +493,9 @@ class RBHN_Capabilities {
          **/
         public function rbhn_limit_current_user_attachments(  $query = array()  ){
 
-            
-            
-            /* 
+            /* drop out if the user has already permission to upload_files and see media the 
+             * 'rbhn_posts_where' hooked function will fire and restric the media seen by these users.
              * 
-             * 
-             * 
-             * 
-             * This currently doesn't restrict media from the ajax media loader for users if they have the wordpress 'upload_files' cap
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             */
-            
-            
-            
-            
-            
-             /* drop out if the user has already permission to upload_files and see all media.
              * remove upload_files map_meta_cap hook so that 'upload_files' capabilty relates to the 
              * user allocated caps before HelpNotes adds the cap to users.
              */
